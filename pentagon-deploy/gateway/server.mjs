@@ -6,6 +6,7 @@ const openaiKey = process.env.OPENAI_API_KEY;
 const notionKey = process.env.NOTION_API_KEY;
 const rendererSecret = process.env.PDF_RENDERER_SECRET;
 const gatewayToken = process.env.PENTAGON_GATEWAY_TOKEN;
+const notionVersion = '2025-09-03';
 
 for (const [name, value] of Object.entries({
   OPENAI_API_KEY: openaiKey,
@@ -63,8 +64,6 @@ app.get('/health', (_req, res) => {
   res.json({ ok: true, service: 'pentagon-runtime-gateway' });
 });
 
-// Deliberately narrow public surface. The gateway token is scoped to only the
-// API calls required by the Fiverr feasibility workflow.
 app.post('/openai/responses', requireGatewayToken, raw, async (req, res) => {
   await forward(req, res, 'https://api.openai.com/v1/responses', {
     authorization: `Bearer ${openaiKey}`,
@@ -74,28 +73,28 @@ app.post('/openai/responses', requireGatewayToken, raw, async (req, res) => {
 app.post('/notion/pages', requireGatewayToken, raw, async (req, res) => {
   await forward(req, res, 'https://api.notion.com/v1/pages', {
     authorization: `Bearer ${notionKey}`,
-    'notion-version': '2026-03-11',
+    'notion-version': notionVersion,
   });
 });
 
 app.patch('/notion/pages/:pageId', requireGatewayToken, raw, async (req, res) => {
   await forward(req, res, `https://api.notion.com/v1/pages/${encodeURIComponent(req.params.pageId)}`, {
     authorization: `Bearer ${notionKey}`,
-    'notion-version': '2026-03-11',
+    'notion-version': notionVersion,
   });
 });
 
 app.post('/notion/file_uploads', requireGatewayToken, raw, async (req, res) => {
   await forward(req, res, 'https://api.notion.com/v1/file_uploads', {
     authorization: `Bearer ${notionKey}`,
-    'notion-version': '2026-03-11',
+    'notion-version': notionVersion,
   });
 });
 
 app.post('/notion/file_uploads/:uploadId/send', requireGatewayToken, raw, async (req, res) => {
   await forward(req, res, `https://api.notion.com/v1/file_uploads/${encodeURIComponent(req.params.uploadId)}/send`, {
     authorization: `Bearer ${notionKey}`,
-    'notion-version': '2026-03-11',
+    'notion-version': notionVersion,
   });
 });
 
