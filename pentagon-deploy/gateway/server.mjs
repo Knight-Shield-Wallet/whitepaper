@@ -5,8 +5,14 @@ const port = Number(process.env.PORT || 3001);
 const openaiKey = process.env.OPENAI_API_KEY;
 const notionKey = process.env.NOTION_API_KEY;
 const rendererSecret = process.env.PDF_RENDERER_SECRET;
+const gatewayToken = process.env.PENTAGON_GATEWAY_TOKEN;
 
-for (const [name, value] of Object.entries({ OPENAI_API_KEY: openaiKey, NOTION_API_KEY: notionKey, PDF_RENDERER_SECRET: rendererSecret })) {
+for (const [name, value] of Object.entries({
+  OPENAI_API_KEY: openaiKey,
+  NOTION_API_KEY: notionKey,
+  PDF_RENDERER_SECRET: rendererSecret,
+  PENTAGON_GATEWAY_TOKEN: gatewayToken,
+})) {
   if (!value) {
     console.error(`${name} is required`);
     process.exit(1);
@@ -22,6 +28,14 @@ function copyResponseHeaders(from, to) {
   }
 }
 
+function requireGatewayToken(req, res, next) {
+  const supplied = req.get('authorization') || '';
+  if (supplied !== `Bearer ${gatewayToken}`) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+  next();
+}
+
 async function forward(req, res, target, headers = {}) {
   try {
     const incomingType = req.get('content-type');
@@ -32,7 +46,7 @@ async function forward(req, res, target, headers = {}) {
       method: req.method,
       headers: outgoingHeaders,
       body: ['GET', 'HEAD'].includes(req.method) ? undefined : req.body,
-      redirect: 'manual'
+      redirect: 'manual',
     });
 
     const data = Buffer.from(await response.arrayBuffer());
@@ -49,25 +63,48 @@ app.get('/health', (_req, res) => {
   res.json({ ok: true, service: 'pentagon-runtime-gateway' });
 });
 
-app.all('/openai/*path', raw, async (req, res) => {
-  const suffix = req.originalUrl.replace(/^\/openai/, '');
-  await forward(req, res, `https://api.openai.com/v1${suffix}`, {
-    authorization: `Bearer ${openaiKey}`
+// Deliberately narrow public surface. The gateway token is scoped to only the
+// API calls required by the Fiverr feasibility workflow.
+app.post('/openai/responses', requireGatewayToken, raw, async (req, res) => {
+  await forward(req, res, 'https://api.openai.com/v1/responses', {
+    authorization: `Bearer ${openaiKey}`,
   });
 });
 
-app.all('/notion/*path', raw, async (req, res) => {
-  const suffix = req.originalUrl.replace(/^\/notion/, '');
-  await forward(req, res, `https://api.notion.com/v1${suffix}`, {
+app.post('/notion/pages', requireGatewayToken, raw, async (req, res) => {
+  await forward(req, res, 'https://api.notion.com/v1/pages', {
     authorization: `Bearer ${notionKey}`,
-    'notion-version': '2026-03-11'
+    'notion-version': '2026-03-11',
   });
 });
 
-app.all('/render', raw, async (req, res) => {
-  await forward(req, res, 'http://pentagon-pdf-renderer:3000/render', {
-    authorization: `Bearer ${rendererSecret}`
+app.patch('/notion/pages/:pageId', requireGatewayToken, raw, async (req, res) => {
+  await forward(req, res, `https://api.notion.com/v1/pages/${encodeURIComponent(req.params.pageId)}`, {
+    authorization: `Bearer ${notionKey}`,
+    'notion-version': '2026-03-11',
   });
 });
+
+app.post('/notion/file_uploads', requireGatewayToken, raw, async (req, res) => {
+  await forward(req, res, 'https://api.notion.com/v1/file_uploads', {
+    authorization: `Bearer ${notionKey}`,
+    'notion-version': '2026-03-11',
+  });
+});
+
+app.post('/notion/file_uploads/:uploadId/send', requireGatewayToken, raw, async (req, res) => {
+  await forward(req, res, `https://api.notion.com/v1/file_uploads/${encodeURIComponent(req.params.uploadId)}/send`, {
+    authorization: `Bearer ${notionKey}`,
+    'notion-version': '2026-03-11',
+  });
+});
+
+app.post('/render', requireGatewayToken, raw, async (req, res) => {
+  await forward(req, res, 'http://pentagon-pdf-renderer:3000/render', {
+    authorization: `Bearer ${rendererSecret}`,
+  });
+});
+
+app.use((_req, res) => res.status(404).json({ error: 'not_found' }));
 
 app.listen(port, '0.0.0.0', () => console.log(`Pentagon gateway listening on ${port}`));
