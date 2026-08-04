@@ -1,0 +1,47 @@
+services:
+  pentagon-pdf-renderer:
+    build:
+      context: https://github.com/Knight-Shield-Wallet/whitepaper.git#pentagon-deploy-staging:pentagon-deploy/pdf-renderer
+    container_name: pentagon-pdf-renderer
+    restart: unless-stopped
+    environment:
+      PORT: "3000"
+      PDF_RENDERER_SECRET: ${PDF_RENDERER_SECRET}
+    expose:
+      - "3000"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks:
+      - traefik-proxy
+
+  pentagon-gateway:
+    build:
+      context: https://github.com/Knight-Shield-Wallet/whitepaper.git#pentagon-deploy-staging:pentagon-deploy/gateway
+    container_name: pentagon-gateway
+    restart: unless-stopped
+    depends_on:
+      pentagon-pdf-renderer:
+        condition: service_healthy
+    environment:
+      PORT: "3001"
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      NOTION_API_KEY: ${NOTION_API_KEY}
+      PDF_RENDERER_SECRET: ${PDF_RENDERER_SECRET}
+    expose:
+      - "3001"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3001/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - traefik-proxy
+
+networks:
+  traefik-proxy:
+    external: true
