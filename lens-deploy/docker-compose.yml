@@ -3,8 +3,6 @@ services:
     image: nginx:1.27-alpine
     container_name: midnight-lens-web
     restart: unless-stopped
-    ports:
-      - "127.0.0.1:18080:80"
     command:
       - /bin/sh
       - -c
@@ -18,7 +16,7 @@ services:
           <title>Midnight Lens — Share only what matters</title>
           <meta name="description" content="Midnight Lens is Knight Shield Digital's privacy layer for proving what is needed without unnecessary personal-data disclosure.">
           <style>
-            :root{color-scheme:dark;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#070b13;color:#f5f7fb}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 75% 15%,#1b2d64 0,transparent 26%),radial-gradient(circle at 15% 80%,#261a4b 0,transparent 28%),#070b13}.wrap{min-height:100vh;display:grid;place-items:center;padding:28px}.card{width:min(900px,100%);border:1px solid rgba(255,255,255,.11);border-radius:28px;padding:clamp(28px,6vw,68px);background:rgba(9,14,27,.82);box-shadow:0 28px 90px rgba(0,0,0,.38);backdrop-filter:blur(18px)}.mark{display:inline-flex;align-items:center;gap:10px;font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:#aab8d7}.dot{width:12px;height:12px;border:2px solid #698cff;border-radius:50%;box-shadow:0 0 24px #3157ff}h1{font-size:clamp(48px,9vw,92px);line-height:.93;letter-spacing:-.05em;margin:30px 0 22px;font-weight:650}h1 span{color:#7d95ff}.lede{font-size:clamp(18px,3vw,25px);line-height:1.5;color:#c7cfdf;max-width:720px}.proof{margin-top:36px;padding:20px 22px;border-radius:18px;background:rgba(49,87,255,.08);border:1px solid rgba(105,140,255,.22);display:grid;gap:8px}.proof strong{font-size:18px}.proof span{color:#9ca9c3;line-height:1.5}.status{margin-top:26px;font-size:13px;color:#7f8ba4}.status b{color:#7cffb2}footer{margin-top:46px;color:#6e788d;font-size:12px}a{color:#9bb0ff}</style>
+            :root{color-scheme:dark;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#070b13;color:#f5f7fb}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 75% 15%,#1b2d64 0,transparent 26%),radial-gradient(circle at 15% 80%,#261a4b 0,transparent 28%),#070b13}.wrap{min-height:100vh;display:grid;place-items:center;padding:28px}.card{width:min(900px,100%);border:1px solid rgba(255,255,255,.11);border-radius:28px;padding:clamp(28px,6vw,68px);background:rgba(9,14,27,.82);box-shadow:0 28px 90px rgba(0,0,0,.38);backdrop-filter:blur(18px)}.mark{display:inline-flex;align-items:center;gap:10px;font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:#aab8d7}.dot{width:12px;height:12px;border:2px solid #698cff;border-radius:50%;box-shadow:0 0 24px #3157ff}h1{font-size:clamp(48px,9vw,92px);line-height:.93;letter-spacing:-.05em;margin:30px 0 22px;font-weight:650}h1 span{color:#7d95ff}.lede{font-size:clamp(18px,3vw,25px);line-height:1.5;color:#c7cfdf;max-width:720px}.proof{margin-top:36px;padding:20px 22px;border-radius:18px;background:rgba(49,87,255,.08);border:1px solid rgba(105,140,255,.22);display:grid;gap:8px}.proof strong{font-size:18px}.proof span{color:#9ca9c3;line-height:1.5}.status{margin-top:26px;font-size:13px;color:#7f8ba4}.status b{color:#7cffb2}footer{margin-top:46px;color:#6e788d;font-size:12px}</style>
         </head>
         <body><main class="wrap"><section class="card">
           <div class="mark"><span class="dot"></span> Knight Shield Digital</div>
@@ -39,15 +37,28 @@ services:
         }
         EOF
         nginx -g 'daemon off;'
+    expose:
+      - "80"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.midnight-lens-web.entrypoints=websecure
+      - traefik.http.routers.midnight-lens-web.rule=Host(`midnight-lens.com`) || Host(`www.midnight-lens.com`)
+      - traefik.http.routers.midnight-lens-web.tls.certresolver=letsencrypt
+      - traefik.http.services.midnight-lens-web.loadbalancer.server.port=80
     networks:
+      - traefik-proxy
       - lens-private
 
   lens-api:
     image: node:22-alpine
     container_name: midnight-lens-api
     restart: unless-stopped
-    ports:
-      - "127.0.0.1:18081:8080"
     environment:
       NODE_ENV: production
       PORT: "8080"
@@ -63,10 +74,27 @@ services:
           if(req.url==='/v1/proof-requests') return send(res,501,{error:'proof_issuance_not_enabled',message:'The Lens integration endpoint is reserved and online; live proof issuance is not enabled yet.'});
           return send(res,404,{error:'not_found'});
         }).listen(8080,'0.0.0.0');
+    expose:
+      - "8080"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8080/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.midnight-lens-api.entrypoints=websecure
+      - traefik.http.routers.midnight-lens-api.rule=Host(`api.midnight-lens.com`)
+      - traefik.http.routers.midnight-lens-api.tls.certresolver=letsencrypt
+      - traefik.http.services.midnight-lens-api.loadbalancer.server.port=8080
     networks:
+      - traefik-proxy
       - lens-private
 
 networks:
+  traefik-proxy:
+    external: true
   lens-private:
     name: midnight-lens-private
     driver: bridge
