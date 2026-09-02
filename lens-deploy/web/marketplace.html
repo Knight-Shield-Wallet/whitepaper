@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#070b13">
+  <title>Lens Marketplace — Real Buy & Sell</title>
+  <meta name="description" content="Filter commercial inventory, inspect seller signals, scan item evidence, and build a privacy-preserving Lens Verify marketplace record.">
+  <link rel="canonical" href="https://midnight-lens.com/marketplace">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="shell marketplace-shell">
+  <nav class="nav">
+    <a class="brand" href="/">Midnight Lens</a>
+    <div class="navlinks"><a href="/marketplace" aria-current="page">Marketplace</a><a href="/demo">Privacy Demo</a><a href="/">Home</a></div>
+  </nav>
+
+  <main class="marketplace-app">
+    <header class="marketplace-hero">
+      <div>
+        <div class="eyebrow">Lens Marketplace · Private beta workspace</div>
+        <h1>Real Buy &amp; Sell.</h1>
+        <p class="lede market-lede">Hide commercial inventory. Inspect the actual item. Keep the evidence clear about what is verified, assessed, or unknown.</p>
+      </div>
+      <div class="market-health" id="apiHealth"><span class="status-dot"></span><span>Checking Lens…</span></div>
+    </header>
+
+    <section class="filter-dock" aria-label="Marketplace filters">
+      <label class="toggle-row"><input id="realBuySell" type="checkbox" checked><span><b>Real Buy &amp; Sell</b><small>Hide likely stores, dealers and commercial inventory</small></span></label>
+      <label><span>Seller account</span><select id="accountAge"><option value="0">Any age</option><option value="30">30+ days</option><option value="90" selected>90+ days</option><option value="180">6+ months</option><option value="365">1+ year</option></select></label>
+      <label><span>Risk ceiling</span><select id="riskCeiling"><option value="100">Show all risk</option><option value="60" selected>Hide high risk</option><option value="30">Low risk only</option></select></label>
+      <label class="toggle-row compact"><input id="hideUnknownAge" type="checkbox"><span><b>Strict age</b><small>Also hide sellers whose age is unavailable</small></span></label>
+      <button class="btn" id="refreshFeed" type="button">Refresh</button>
+    </section>
+
+    <div class="market-grid">
+      <section class="market-column">
+        <div class="section-head"><div><div class="eyebrow">Your cleaned feed</div><h2>Listings</h2></div><div class="counter" id="feedCounter">0 shown</div></div>
+        <div id="feed" class="listing-feed"><div class="empty-state">No Lens listings yet. Import a visible marketplace listing or use the Lens browser filter.</div></div>
+      </section>
+
+      <aside class="market-column market-tools">
+        <details class="tool-card" open>
+          <summary><span><b>Import a listing</b><small>Lens only uses what you provide or what the browser helper can already see.</small></span></summary>
+          <form id="importForm" class="tool-body form">
+            <label class="field"><span>Marketplace URL</span><input id="sourceUrl" type="url" inputmode="url" placeholder="https://www.facebook.com/marketplace/item/…"></label>
+            <div class="two-up"><label class="field"><span>Title</span><input id="listingTitle" maxlength="500" placeholder="iPhone 15 Pro"></label><label class="field"><span>Price</span><input id="listingPrice" maxlength="100" placeholder="$850"></label></div>
+            <label class="field"><span>Description</span><textarea id="listingDescription" maxlength="6000" placeholder="Paste the visible listing description"></textarea></label>
+            <div class="two-up"><label class="field"><span>Seller name</span><input id="sellerName" maxlength="300"></label><label class="field"><span>Account age in days</span><input id="sellerAge" type="number" min="0" inputmode="numeric" placeholder="Unknown is okay"></label></div>
+            <label class="field"><span>Visible seller listing count</span><input id="sellerListingCount" type="number" min="0" inputmode="numeric" placeholder="Leave blank if Facebook does not show it"></label>
+            <button class="btn primary" type="submit">Analyze &amp; add</button>
+            <p class="microcopy">Lens does not invent hidden seller data. Missing account age stays <b>Unknown</b>.</p>
+          </form>
+        </details>
+
+        <details class="tool-card" open>
+          <summary><span><b>Item Scan</b><small>Posted photo + live item + serial and condition evidence.</small></span></summary>
+          <div class="tool-body">
+            <div class="scan-selector"><label class="file-button">Posted photo<input id="postedPhoto" type="file" accept="image/*"></label><label class="file-button">Live item photo<input id="livePhoto" type="file" accept="image/*" capture="environment"></label></div>
+            <div class="scan-preview-grid"><canvas id="postedCanvas" width="320" height="220"></canvas><canvas id="liveCanvas" width="320" height="220"></canvas></div>
+            <div id="compareResult" class="notice">Add a posted photo and a live photo to compare the visible item. A visual match is evidence, not identity proof.</div>
+            <div class="two-up"><label class="field"><span>Serial / IMEI / model</span><input id="identifierValue" autocomplete="off" spellcheck="false" placeholder="Scan or enter identifier"></label><label class="field"><span>Type</span><select id="identifierType"><option value="serial">Serial</option><option value="imei">IMEI</option><option value="vin">VIN</option><option value="barcode">Barcode</option><option value="model">Model</option></select></label></div>
+            <div class="action-row"><button class="btn" id="scanIdentifiers" type="button">Scan visible codes</button><button class="btn primary" id="saveItemScan" type="button">Save scan to record</button></div>
+            <div id="identifierResults" class="receipt-stack"></div>
+          </div>
+        </details>
+
+        <details class="tool-card">
+          <summary><span><b>Stolen-item check</b><small>Prepare an authoritative public-registry lookup without pretending it is police clearance.</small></span></summary>
+          <div class="tool-body">
+            <p class="microcopy">For Canada, Lens hands the serial/VIN to the official CPIC public-search step. You accept CPIC's terms yourself. Lens never auto-accepts them or labels a negative search as police clearance.</p>
+            <div class="action-row"><button class="btn primary" id="prepareCpic" type="button">Prepare CPIC check</button><button class="btn" id="prepareBikeIndex" type="button">Bike Index</button></div>
+            <div id="registryBox" class="receipt-stack"></div>
+          </div>
+        </details>
+
+        <details class="tool-card">
+          <summary><span><b>Size Check</b><small>Use a Canadian loonie as a 26.5 mm reference.</small></span></summary>
+          <div class="tool-body">
+            <label class="file-button wide">Choose measurement photo<input id="sizePhoto" type="file" accept="image/*"></label>
+            <canvas id="sizeCanvas" class="measure-canvas" width="640" height="420"></canvas>
+            <p id="sizeInstruction" class="notice">Tap the two opposite edges of the loonie, then the two endpoints of the item dimension you want to measure.</p>
+            <div class="action-row"><button class="btn" id="resetSize" type="button">Reset points</button><button class="btn primary" id="saveSize" type="button">Save measurement</button></div>
+          </div>
+        </details>
+
+        <details class="tool-card" open>
+          <summary><span><b>Photo Guard</b><small>Privacy scan · Filter Teller · Filter Remover</small></span></summary>
+          <div class="tool-body">
+            <label class="file-button wide">Analyze photo locally<input id="guardPhoto" type="file" accept="image/*"></label>
+            <div class="guard-grid"><canvas id="guardCanvas" width="640" height="420"></canvas><canvas id="reconstructedCanvas" width="640" height="420"></canvas></div>
+            <div id="guardResults" class="receipt-stack"><div class="notice">Photo analysis stays on this device unless you explicitly save derived evidence to a Lens record.</div></div>
+            <div class="action-row"><button class="btn" id="privacyClean" type="button">Create privacy-clean copy</button><button class="btn" id="reduceFilters" type="button">Reduce detected filters</button><button class="btn primary" id="savePhotoGuard" type="button">Save derived evidence</button></div>
+            <p class="microcopy"><b>Filter Teller:</b> exact recorded edits are shown only when supported provenance/edit history exists. Otherwise Lens reports observable effects with confidence. <b>Filter Remover:</b> a flattened photo can only produce a reconstruction, never the lost original.</p>
+          </div>
+        </details>
+      </aside>
+    </div>
+
+    <section class="record-panel" id="recordPanel" hidden>
+      <div class="section-head"><div><div class="eyebrow">Lens Verify Marketplace Record</div><h2 id="recordTitle">Selected listing</h2></div><button id="closeRecord" class="btn" type="button">Close</button></div>
+      <div class="proof-legend"><span class="proof-chip verified">Verified</span><span class="proof-chip assessed">Assessed</span><span class="proof-chip unknown">Unknown</span></div>
+      <div id="recordSummary" class="record-summary"></div>
+      <div id="recordReceipts" class="receipt-grid"></div>
+    </section>
+
+    <section class="privacy-footer panel">
+      <div><div class="eyebrow">Privacy control</div><h3>Delete this Lens Marketplace session</h3><p>Removes the normalized listing records and receipts tied to this local Lens session.</p></div>
+      <button id="deleteSession" class="btn danger" type="button">Delete my session data</button>
+    </section>
+  </main>
+</div>
+<script src="/marketplace.js" defer></script>
+</body>
+</html>
