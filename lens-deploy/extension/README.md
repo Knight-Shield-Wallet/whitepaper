@@ -8,6 +8,7 @@
 - Applies seller-account-age filtering only when Facebook visibly exposes a `Joined Facebook in …` value.
 - Keeps unavailable account age as **Unknown** unless the user enables strict age filtering.
 - Can sync visible listing metadata into the user's Midnight Lens Marketplace session so the Lens web workspace can build evidence records.
+- Routes optional Lens API sync through the extension background worker, so the Facebook page itself is not granted direct Lens API access.
 
 ## What this build does not do
 
@@ -19,8 +20,8 @@
 
 ## Firefox Android / desktop
 
-This is a Manifest V3 WebExtension. Load the `lens-deploy/extension` directory as a temporary/development extension for QA, then package/sign it through the browser's normal extension release process before public distribution.
+This is a Manifest V3 WebExtension. The repository produces a QA ZIP plus SHA-256 checksum through GitHub Actions. Public browser distribution still requires the normal browser-store signing/review gate.
 
 ## Evidence route
 
-Visible Marketplace card → local deterministic classification → hide/show decision → optional normalized metadata sync → Midnight Lens Marketplace record → device-local Item Scan / Photo Guard → registry handoff → Lens Verify receipts.
+Visible Marketplace card → local deterministic classification → hide/show decision → extension background sync → normalized Lens metadata → Midnight Lens Marketplace record → device-local Item Scan / Photo Guard → registry handoff → Lens Verify receipts.
