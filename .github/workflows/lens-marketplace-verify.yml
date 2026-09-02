@@ -1,0 +1,46 @@
+name: Lens Marketplace Verify
+
+on:
+  pull_request:
+    paths:
+      - 'lens-deploy/web/**'
+      - 'lens-deploy/extension/**'
+      - '.github/workflows/lens-marketplace-verify.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'lens-deploy/web/**'
+      - 'lens-deploy/extension/**'
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: JavaScript syntax
+        run: |
+          node --check lens-deploy/web/marketplace.js
+          node --check lens-deploy/extension/content.js
+      - name: Extension manifest JSON
+        run: python -m json.tool lens-deploy/extension/manifest.json >/dev/null
+      - name: Truth-boundary assertions
+        run: |
+          grep -q 'Unknown' lens-deploy/web/marketplace.html
+          grep -q 'not police clearance' lens-deploy/web/marketplace.html
+          grep -q 'filters computationally reduced' lens-deploy/web/marketplace.js
+          grep -q 'does not crawl seller profiles' lens-deploy/extension/README.md
+      - name: Static route smoke test
+        run: |
+          cd lens-deploy/web
+          python3 -m http.server 8765 >/tmp/lens-http.log 2>&1 &
+          server_pid=$!
+          trap 'kill $server_pid' EXIT
+          sleep 1
+          curl --fail --silent http://127.0.0.1:8765/marketplace.html | grep -q 'Real Buy &amp; Sell'
+          curl --fail --silent http://127.0.0.1:8765/marketplace.js | grep -q 'LOONIE_MM = 26.5'
