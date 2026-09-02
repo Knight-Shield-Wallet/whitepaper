@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "Midnight Lens — Real Buy & Sell",
+  "version": "0.1.0",
+  "description": "Locally filters likely commercial Marketplace listings and syncs only visible listing metadata into your Midnight Lens Marketplace session.",
+  "permissions": ["storage"],
+  "host_permissions": [
+    "https://www.facebook.com/marketplace/*",
+    "https://m.facebook.com/marketplace/*",
+    "https://ejeuttgrqxqxlpotbzao.supabase.co/functions/v1/midnight-lens-marketplace-v1*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://www.facebook.com/marketplace/*", "https://m.facebook.com/marketplace/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "marketplace@midnight-lens.com",
+      "strict_min_version": "128.0"
+    }
+  }
+}
