@@ -1,0 +1,44 @@
+name: Lens Marketplace Extension Package
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'lens-deploy/extension/**'
+      - '.github/workflows/lens-marketplace-extension-package.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate extension source
+        run: |
+          node --check lens-deploy/extension/sync-bridge.js
+          node --check lens-deploy/extension/content.js
+          node --check lens-deploy/extension/background.js
+          python -m json.tool lens-deploy/extension/manifest.json >/dev/null
+          test "$(python -c "import json;print(json.load(open('lens-deploy/extension/manifest.json'))['version'])")" = '0.1.1'
+      - name: Build QA ZIP
+        run: |
+          mkdir -p dist
+          cd lens-deploy/extension
+          zip -r ../../dist/midnight-lens-marketplace-extension-0.1.1-qa.zip manifest.json background.js sync-bridge.js content.js README.md
+          cd ../..
+          sha256sum dist/midnight-lens-marketplace-extension-0.1.1-qa.zip | tee dist/SHA256SUMS.txt
+      - name: Upload QA package and checksum
+        uses: actions/upload-artifact@v4
+        with:
+          name: midnight-lens-marketplace-extension-0.1.1-qa
+          path: |
+            dist/midnight-lens-marketplace-extension-0.1.1-qa.zip
+            dist/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 30
