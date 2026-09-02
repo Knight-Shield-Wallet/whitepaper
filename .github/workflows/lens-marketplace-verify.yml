@@ -32,7 +32,7 @@ jobs:
       - name: Truth-boundary assertions
         run: |
           grep -q 'Unknown' lens-deploy/web/marketplace.html
-          grep -q 'not police clearance' lens-deploy/web/marketplace.html
+          grep -q 'never auto-accepts them or labels a negative search as police clearance' lens-deploy/web/marketplace.html
           grep -q 'filters computationally reduced' lens-deploy/web/marketplace.js
           grep -q 'does not crawl seller profiles' lens-deploy/extension/README.md
       - name: Static route smoke test
