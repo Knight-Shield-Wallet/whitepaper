@@ -26,9 +26,15 @@ jobs:
       - name: JavaScript syntax
         run: |
           node --check lens-deploy/web/marketplace.js
+          node --check lens-deploy/extension/sync-bridge.js
           node --check lens-deploy/extension/content.js
-      - name: Extension manifest JSON
-        run: python -m json.tool lens-deploy/extension/manifest.json >/dev/null
+          node --check lens-deploy/extension/background.js
+      - name: Extension manifest JSON and wiring
+        run: |
+          python -m json.tool lens-deploy/extension/manifest.json >/dev/null
+          grep -q '"service_worker": "background.js"' lens-deploy/extension/manifest.json
+          grep -q '"sync-bridge.js", "content.js"' lens-deploy/extension/manifest.json
+          grep -q "lens-marketplace-api" lens-deploy/extension/background.js
       - name: Truth-boundary assertions
         run: |
           grep -q 'Unknown' lens-deploy/web/marketplace.html
