@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Veterans Village Connect — Demo</title>
+<style>
+:root{
+  --navy:#18324a;--navy2:#244761;--gold:#c59b56;--bg:#f5f7f8;--card:#ffffff;
+  --text:#1f2933;--muted:#66717c;--line:#dfe5e9;--good:#2d6a4f;--warn:#9b6b1b;--danger:#a23d3d;
+  --shadow:0 10px 28px rgba(24,50,74,.09);--r:18px;
+}
+*{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+a{color:inherit;text-decoration:none} button,input,textarea,select{font:inherit}
+.demo-bar{background:#fff0c9;color:#624800;border-bottom:1px solid #e8cc7a;padding:9px 14px;text-align:center;font-weight:800;font-size:.86rem;letter-spacing:.02em}
+.topbar{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav{max-width:1180px;margin:auto;padding:14px 18px;display:flex;align-items:center;gap:18px}
+.brand{font-weight:900;color:var(--navy);font-size:1.08rem}.brand small{display:block;font-size:.68rem;color:var(--muted);font-weight:700}
+.navlinks{margin-left:auto;display:flex;gap:14px;font-size:.92rem;color:#42515d}.navlinks a:hover{color:var(--navy)}
+.btn{border:0;border-radius:12px;padding:12px 16px;font-weight:800;cursor:pointer}.btn.primary{background:var(--navy);color:white}.btn.secondary{background:white;border:1px solid var(--line);color:var(--navy)}.btn.gold{background:var(--gold);color:#1d2430}
+.hero{background:linear-gradient(135deg,#eef4f6,#fff 65%);border-bottom:1px solid var(--line)}
+.wrap{max-width:1180px;margin:auto;padding:54px 18px}.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:34px;align-items:center}
+.eyebrow{font-size:.82rem;font-weight:900;color:var(--gold);letter-spacing:.08em;text-transform:uppercase}
+h1{font-size:clamp(2.4rem,5vw,5rem);line-height:.98;margin:12px 0 18px;color:var(--navy);letter-spacing:-.04em}
+.lead{font-size:1.16rem;line-height:1.65;color:#455460;max-width:720px}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}
+.hero-card{background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:26px;overflow:hidden}
+.hero-photo{height:320px;background:url('https://structures.atco.com/content/dam/atco-structures-website/en-ca/assets/about-us/stories/homes-for-heroes-4x3.jpeg/_jcr_content/renditions/webp-600-600.webp') center/cover}
+.hero-card .pad{padding:18px}.tiny{font-size:.78rem;color:var(--muted)}
+.section{padding:58px 18px}.section.alt{background:#edf2f4}.container{max-width:1180px;margin:auto}
+.section h2{font-size:clamp(1.7rem,3vw,2.7rem);margin:0 0 10px;color:var(--navy);letter-spacing:-.025em}
+.section-intro{color:var(--muted);max-width:780px;line-height:1.6}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:26px}.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:24px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px;box-shadow:0 5px 16px rgba(24,50,74,.04)}
+.card h3{margin:4px 0 8px;color:var(--navy)}.card p{color:var(--muted);line-height:1.55}
+.icon{width:42px;height:42px;border-radius:12px;background:#e8eff3;display:grid;place-items:center;font-size:1.3rem}
+.steps{display:grid;gap:12px;margin-top:24px}.step{display:grid;grid-template-columns:44px 1fr;gap:14px;align-items:start;background:white;border:1px solid var(--line);border-radius:14px;padding:16px}.num{width:34px;height:34px;border-radius:50%;background:var(--navy);color:white;display:grid;place-items:center;font-weight:900}
+.app-shell{max-width:1180px;margin:34px auto 70px;padding:0 18px}.app{background:#fff;border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);overflow:hidden}
+.app-head{display:flex;gap:12px;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line);background:#fbfcfc}.app-head strong{color:var(--navy)}.role-switch{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.role{border:1px solid var(--line);background:white;padding:8px 10px;border-radius:10px;font-size:.82rem;font-weight:800;cursor:pointer}.role.active{background:var(--navy);color:white;border-color:var(--navy)}
+.app-body{display:grid;grid-template-columns:230px 1fr;min-height:620px}.sidebar{border-right:1px solid var(--line);background:#f7f9fa;padding:16px}.sideitem{padding:11px 12px;border-radius:10px;color:#42515d;font-weight:750;font-size:.9rem;margin-bottom:4px;cursor:pointer}.sideitem.active,.sideitem:hover{background:#e6edf1;color:var(--navy)}
+.content{padding:22px}.content h3{font-size:1.45rem;color:var(--navy);margin:0}.statgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}.stat{border:1px solid var(--line);border-radius:14px;padding:14px}.stat b{display:block;font-size:1.6rem;color:var(--navy)}.stat span{font-size:.78rem;color:var(--muted)}
+.task{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);padding:14px;border-radius:14px;margin-top:10px}.badge{padding:5px 8px;border-radius:999px;font-size:.72rem;font-weight:900;background:#eef2f4;color:#53606a;white-space:nowrap}.badge.warn{background:#fff2cd;color:#7c5a12}.badge.good{background:#dff2e8;color:#2d6a4f}.badge.red{background:#fce7e7;color:#973f3f}
+.mobile-home{display:none}.quickgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:18px}.quick{border:1px solid var(--line);border-radius:16px;padding:16px;background:white;cursor:pointer}.quick strong{display:block;color:var(--navy);margin-top:6px}.notice{background:#edf4f8;border-left:4px solid var(--navy);padding:14px;border-radius:10px;margin:14px 0}.help{background:#fff8e7;border:1px solid #eed79b;border-radius:16px;padding:16px;margin:16px 0}.legal{background:#fbfbfa;border:1px dashed #bcc7cd}
+footer{background:#142b3e;color:#d9e1e6;padding:32px 18px}.footerin{max-width:1180px;margin:auto;font-size:.88rem;line-height:1.6}
+.modal{position:fixed;inset:0;background:rgba(15,30,42,.48);display:none;align-items:center;justify-content:center;padding:16px;z-index:50}.modal.show{display:flex}.modalbox{background:white;border-radius:20px;max-width:540px;width:100%;padding:22px;box-shadow:var(--shadow)}.modalbox h3{margin-top:0;color:var(--navy)}.field{margin:12px 0}.field label{display:block;font-weight:800;font-size:.86rem;margin-bottom:6px}.field input,.field textarea,.field select{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;background:white}.actions{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}
+@media(max-width:850px){
+ .navlinks{display:none}.hero-grid,.grid3,.grid2{grid-template-columns:1fr}.hero-photo{height:240px}
+ .app-body{display:block}.sidebar{display:none}.statgrid{grid-template-columns:repeat(2,1fr)}.desktop-only{display:none}.mobile-home{display:block}
+ .wrap{padding-top:36px}.section{padding:42px 16px}.app-shell{padding:0 10px}.app{border-radius:18px}.content{padding:16px}
+ .role-switch{overflow:auto;flex-wrap:nowrap;max-width:58vw}.role{white-space:nowrap}
+}
+</style>
+</head>
+<body>
+<div class="demo-bar">DEMO — NOT LIVE • No real resident data • Independent prototype for discussion and evaluation</div>
+<header class="topbar">
+  <div class="nav">
+    <div class="brand">Veterans Village Connect<small>Edmonton pilot concept</small></div>
+    <nav class="navlinks">
+      <a href="#about">About</a><a href="#housing">I Need Housing</a><a href="#privacy">Privacy</a><a href="#demo">Demo</a>
+    </nav>
+    <a class="btn primary" href="#demo">Open Demo</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">Support made simpler</div>
+      <h1>One place to live, connect, ask for help, and know what comes next.</h1>
+      <p class="lead">A privacy-first resident platform concept for the Edmonton Veterans Village — built to reduce paperwork, improve communication, protect dignity, and make everyday support easier to access.</p>
+      <div class="hero-actions">
+        <a class="btn gold" href="#housing">I Need Housing</a>
+        <a class="btn secondary" href="#demo">Try the resident demo</a>
+      </div>
+      <p class="tiny" style="margin-top:14px">Free 30-day pilot concept • No obligation • Sensitive integrations remain demo-only until legal, privacy and security gates pass.</p>
+    </div>
+    <div class="hero-card">
+      <div class="hero-photo" role="img" aria-label="Veterans supportive housing complex"></div>
+      <div class="pad"><strong>Designed for real life, not paperwork.</strong><div class="tiny">Public information, resident tools, staff operations and trusted partner referrals in one controlled experience.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="about">
+  <div class="container">
+    <h2>What this changes</h2>
+    <p class="section-intro">The goal is not to put old processes on a screen. It is to remove unnecessary steps, repeated storytelling, uncertainty and wasted travel.</p>
+    <div class="grid3">
+      <div class="card"><div class="icon">🏠</div><h3>Know your Village</h3><p>Wi-Fi, unit information, garbage, contacts, visiting services, maintenance and community information in one place.</p></div>
+      <div class="card"><div class="icon">🤝</div><h3>Ask for help once</h3><p>Residents can request support without first knowing which organization handles it. Trusted staff can create consent-based referrals.</p></div>
+      <div class="card"><div class="icon">🔒</div><h3>Share less</h3><p>Use minimum necessary information. Partners see only the requests sent to them, not an open resident directory.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section alt" id="housing">
+  <div class="container">
+    <h2>I Need Housing</h2>
+    <p class="section-intro">A veteran in crisis should not need insider knowledge to figure out where to start. The public side explains the path in plain language.</p>
+    <div class="steps">
+      <div class="step"><div class="num">1</div><div><strong>Learn what the Village offers</strong><div class="tiny">See the homes, community setting, support model and what residents can expect.</div></div></div>
+      <div class="step"><div class="num">2</div><div><strong>Contact the Edmonton Village</strong><div class="tiny">The official contact pathway is presented clearly. No guessing who to call.</div></div></div>
+      <div class="step"><div class="num">3</div><div><strong>Understand the application process</strong><div class="tiny">Eligibility and required information are explained before someone has to repeat their story.</div></div></div>
+      <div class="step"><div class="num">4</div><div><strong>Know what happens next</strong><div class="tiny">The applicant can see the next step and who is responsible for it.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="privacy">
+  <div class="container">
+    <h2>Privacy should make life easier</h2>
+    <p class="section-intro">The platform is designed around a simple rule: collect less, share less, and prove only what is needed for the task.</p>
+    <div class="grid2">
+      <div class="card"><h3>Dignity-first referrals</h3><p>A resident can ask for food, fuel, transportation or other help. With consent, an authorized staff member can send a verified referral to an approved partner without forcing the resident to retell their entire situation.</p></div>
+      <div class="card"><h3>Partner protection</h3><p>Partners can see whether materially similar assistance was recently fulfilled where consent and program rules allow, without gaining broad access to resident information.</p></div>
+      <div class="card"><h3>AI as a helper, not a judge</h3><p>AI can warn, route and summarize. It cannot decide tenancy, punish residents, deny support, or make disciplinary decisions.</p></div>
+      <div class="card"><h3>Hard pilot boundary</h3><p>No medical records, diagnoses, medications, VAC claim files, banking credentials, unrestricted financial records or clinical communications in the initial pilot.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section alt" id="demo">
+  <div class="container">
+    <h2>Interactive demo</h2>
+    <p class="section-intro">Switch roles to see how the same platform changes for a resident, staff member, administrator, owner or service partner.</p>
+  </div>
+  <div class="app-shell">
+    <div class="app">
+      <div class="app-head">
+        <strong>Veterans Village Connect</strong>
+        <span class="badge warn">DEMO</span>
+        <div class="role-switch">
+          <button class="role active" data-role="resident">Resident</button>
+          <button class="role" data-role="staff">Staff</button>
+          <button class="role" data-role="admin">Admin</button>
+          <button class="role" data-role="owner">Owner</button>
+          <button class="role" data-role="partner">Partner</button>
+        </div>
+      </div>
+      <div class="app-body">
+        <aside class="sidebar" id="sidebar">
+          <div class="sideitem active">Dashboard</div>
+          <div class="sideitem">My Unit</div>
+          <div class="sideitem">Community</div>
+          <div class="sideitem">Services</div>
+          <div class="sideitem">Help</div>
+          <div class="sideitem">Resources</div>
+          <div class="sideitem">Messages</div>
+        </aside>
+        <main class="content" id="content"></main>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2>Free 30-day Edmonton pilot</h2>
+    <div class="grid2">
+      <div class="card"><h3>Build first. Decide after.</h3><p>Knight Shield Digital proposes a no-cost Edmonton pilot. Residents and staff use it, provide feedback, and decide whether it earns a permanent place.</p></div>
+      <div class="card legal"><h3>Pilot Safety Gate</h3><p>Before any real resident data: legal review, privacy impact assessment, security review, consent rules, retention rules, role controls, Community Conduct Standard, organizational approval and testing.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footerin">
+    <strong>Veterans Village Connect</strong><br/>
+    Independent prototype by Knight Shield Digital Inc. for discussion and evaluation. Not an official Homes for Heroes or ATCO service.
+  </div>
+</footer>
+
+<div class="modal" id="modal"><div class="modalbox" id="modalbox"></div></div>
+
+<script>
+const content=document.getElementById('content'), sidebar=document.getElementById('sidebar'), modal=document.getElementById('modal'), modalbox=document.getElementById('modalbox');
+
+function resident(){
+sidebar.innerHTML='<div class="sideitem active">Home</div><div class="sideitem">My Unit</div><div class="sideitem">Community</div><div class="sideitem">Services</div><div class="sideitem">Help</div><div class="sideitem">Resources</div><div class="sideitem">Messages</div>';
+content.innerHTML=`
+<h3>Good afternoon</h3><div class="notice"><strong>Today at the Village</strong><br>Visiting doctor: 1:00–4:00 PM • Community coffee: 6:30 PM</div>
+<div class="quickgrid">
+  <div class="quick" onclick="openHelp()"><div>🆘</div><strong>I Need Help</strong><span class="tiny">Food, transportation, paperwork and more</span></div>
+  <div class="quick" onclick="openMaintenance()"><div>🔧</div><strong>Report a Problem</strong><span class="tiny">Send a unit issue and track it</span></div>
+  <div class="quick" onclick="openCommunity()"><div>💬</div><strong>Community Board</strong><span class="tiny">Rides, errands, tools and events</span></div>
+  <div class="quick" onclick="openAppointment()"><div>📅</div><strong>Book a Service</strong><span class="tiny">See visiting services and time slots</span></div>
+</div>
+<div class="help"><strong>Ask the Village Assistant</strong><p class="tiny">Try: “When is the doctor here next?” or “Who helps with food delivery?”</p><button class="btn secondary" onclick="assistantAnswer()">Ask a question</button></div>
+<div class="card"><h3>My Unit</h3><p>Wi-Fi • Garbage & recycling • Unit information • Emergency contacts</p><span class="badge good">No open urgent issues</span></div>`;
+}
+
+function staff(){
+sidebar.innerHTML='<div class="sideitem active">Dashboard</div><div class="sideitem">Requests</div><div class="sideitem">Maintenance</div><div class="sideitem">Referrals</div><div class="sideitem">Services</div><div class="sideitem">Community</div><div class="sideitem">Messages</div>';
+content.innerHTML=`
+<h3>Staff Dashboard</h3>
+<div class="statgrid"><div class="stat"><b>4</b><span>Open requests</span></div><div class="stat"><b>3</b><span>Maintenance items</span></div><div class="stat"><b>2</b><span>Pending referrals</span></div><div class="stat"><b>1</b><span>Moderation review</span></div></div>
+<div class="task"><span class="badge warn">NEXT</span><div><strong>Unit 14 — heating concern</strong><div class="tiny">Acknowledge request and assign maintenance.</div></div></div>
+<div class="task"><span class="badge">REFERRAL</span><div><strong>Short-term grocery assistance</strong><div class="tiny">Resident consent confirmed. Review minimum information before sending to partner.</div></div></div>
+<div class="task"><span class="badge">MESSAGE</span><div><strong>Private resident question</strong><div class="tiny">Response requested about a Village policy.</div></div></div>`;
+}
+
+function admin(){
+sidebar.innerHTML='<div class="sideitem active">Dashboard</div><div class="sideitem">Residents</div><div class="sideitem">Requests</div><div class="sideitem">Referrals</div><div class="sideitem">Services</div><div class="sideitem">Resources</div><div class="sideitem">Community</div><div class="sideitem">Feedback</div><div class="sideitem">Settings</div>';
+content.innerHTML=`
+<h3>Admin Dashboard</h3>
+<div class="statgrid"><div class="stat"><b>18</b><span>Demo resident accounts</span></div><div class="stat"><b>6</b><span>Active services</span></div><div class="stat"><b>4</b><span>Approved partners</span></div><div class="stat"><b>92%</b><span>Info up to date</span></div></div>
+<div class="grid2">
+<div class="card"><h3>Manage Village Information</h3><p>Announcements, resources, forms, providers, community rules and routing.</p><button class="btn secondary">Open content manager</button></div>
+<div class="card"><h3>Pilot Feedback</h3><p>Residents most value unit requests, clear information and one-tap help routing.</p><span class="badge good">Demo trend</span></div>
+</div>`;
+}
+
+function owner(){
+sidebar.innerHTML='<div class="sideitem active">Overview</div><div class="sideitem">Operations</div><div class="sideitem">Partners</div><div class="sideitem">Feedback</div><div class="sideitem">Privacy Gate</div><div class="sideitem">Audit Log</div><div class="sideitem">Roles</div>';
+content.innerHTML=`
+<h3>Owner Overview</h3>
+<div class="statgrid"><div class="stat"><b>86%</b><span>Demo weekly engagement</span></div><div class="stat"><b>9</b><span>Requests resolved</span></div><div class="stat"><b>5</b><span>Referrals fulfilled</span></div><div class="stat"><b>0</b><span>Privacy incidents</span></div></div>
+<div class="grid2">
+<div class="card"><h3>Pilot Safety Gate</h3><p>Legal, privacy, consent, retention, security and role-control requirements must pass before real resident data.</p><span class="badge red">NOT CLEARED FOR LIVE DATA</span></div>
+<div class="card"><h3>Dust Bowl Cafe — Free Trial</h3><p>Owner-only operations workspace bonus during the pilot. Optional after the trial. Qualifying charity/non-profit organizations receive 20% off standard subscription pricing.</p><span class="badge warn">TRIAL</span></div>
+</div>
+<div class="card" style="margin-top:16px"><h3>What needs attention</h3><p>2 unresolved resident requests • 1 partner response overdue • privacy gate still incomplete.</p></div>`;
+}
+
+function partner(){
+sidebar.innerHTML='<div class="sideitem active">Assigned Requests</div><div class="sideitem">Appointments</div><div class="sideitem">Messages</div>';
+content.innerHTML=`
+<h3>Partner Workspace</h3><div class="notice"><strong>Privacy rule:</strong> You only see referrals sent to your organization. There is no resident directory.</div>
+<div class="task"><span class="badge warn">PENDING</span><div><strong>Grocery assistance request</strong><div class="tiny">Verified resident • Consent confirmed • Similar assistance recently fulfilled: No</div><div style="margin-top:10px"><button class="btn primary">Approve demo</button> <button class="btn secondary">Request info</button></div></div></div>
+<div class="task"><span class="badge good">FULFILLED</span><div><strong>Fuel assistance</strong><div class="tiny">Digital e-gift card issued by partner • Demo record only</div></div></div>`;
+}
+
+function openMaintenance(){
+modalbox.innerHTML='<h3>Report a Problem</h3><div class="field"><label>Category</label><select><option>Plumbing</option><option>Heating</option><option>Electrical</option><option>Appliance</option><option>General</option></select></div><div class="field"><label>What happened?</label><textarea rows="4" placeholder="Describe the issue"></textarea></div><div class="field"><label>Photo</label><input type="file"/></div><div class="actions"><button class="btn secondary" onclick="closeModal()">Cancel</button><button class="btn primary" onclick="submitted(\'Maintenance request received — demo only.\')">Submit</button></div>';modal.classList.add('show')
+}
+function openHelp(){
+modalbox.innerHTML='<h3>I Need Help</h3><p class="tiny">You do not need to know which organization handles the issue.</p><div class="field"><label>What do you need help with?</label><select><option>Food</option><option>Transportation</option><option>Short-term essentials</option><option>VAC / veteran benefits navigation</option><option>Paperwork</option><option>Financial counselling</option><option>Someone to talk to</option><option>Other</option></select></div><div class="field"><label>Optional note</label><textarea rows="3"></textarea></div><div class="actions"><button class="btn secondary" onclick="closeModal()">Cancel</button><button class="btn primary" onclick="submitted(\'Request sent to the appropriate demo pathway.\')">Send request</button></div>';modal.classList.add('show')
+}
+function openCommunity(){
+modalbox.innerHTML='<h3>Community Board</h3><div class="field"><label>Post type</label><select><option>Need a ride</option><option>Going shopping</option><option>Borrow / lend item</option><option>Offer help</option><option>Event</option><option>Coffee / social</option></select></div><div class="field"><label>Message</label><textarea id="posttext" rows="4" placeholder="Example: I am going to Costco at 3 if anyone wants to come."></textarea></div><div class="actions"><button class="btn secondary" onclick="closeModal()">Cancel</button><button class="btn primary" onclick="moderatePost()">Review & post</button></div>';modal.classList.add('show')
+}
+function moderatePost(){
+const t=(document.getElementById('posttext').value||'').toLowerCase();
+const flags=['complaint','idiot','hate','management sucks','stupid','threat','asshole'];
+if(flags.some(x=>t.includes(x))){
+modalbox.innerHTML='<h3>Private may be better</h3><p>This looks like a concern that may be better handled privately. Would you like to send it directly to management instead?</p><div class="notice">AI only warns and routes. It does not discipline residents or affect tenancy.</div><div class="actions"><button class="btn secondary" onclick="closeModal()">Edit post</button><button class="btn primary" onclick="submitted(\'Redirected to private management — demo only.\')">Send privately</button></div>'
+}else submitted('Community post approved for demo board.')
+}
+function openAppointment(){
+modalbox.innerHTML='<h3>Visiting Services</h3><div class="field"><label>Service</label><select><option>Visiting Doctor</option><option>Counsellor</option><option>Financial Advisor</option><option>Veteran Service Representative</option></select></div><div class="field"><label>Available time</label><select><option>1:00 PM</option><option>1:30 PM</option><option>2:30 PM</option><option>3:30 PM</option></select></div><div class="notice">Demo only. No medical records or clinical information are stored.</div><div class="actions"><button class="btn secondary" onclick="closeModal()">Cancel</button><button class="btn primary" onclick="submitted(\'Appointment time reserved in demo.\')">Confirm privately</button></div>';modal.classList.add('show')
+}
+function assistantAnswer(){
+modalbox.innerHTML='<h3>Village Assistant</h3><div class="field"><label>Ask a question</label><input id="q" placeholder="When is the doctor here next?"/></div><div class="actions"><button class="btn secondary" onclick="closeModal()">Close</button><button class="btn primary" onclick="document.getElementById(\'answer\').innerHTML=\'The next demo visiting-doctor session is shown as 1:00–4:00 PM today. For real use, answers would come only from approved Village information.\'">Ask</button></div><div id="answer" class="notice">The assistant does not make housing, medical, financial or eligibility decisions.</div>';modal.classList.add('show')
+}
+function submitted(msg){modalbox.innerHTML='<h3>Done</h3><p>'+msg+'</p><div class="actions"><button class="btn primary" onclick="closeModal()">Close</button></div>'}
+function closeModal(){modal.classList.remove('show')}
+modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});
+document.querySelectorAll('.role').forEach(b=>b.addEventListener('click',()=>{
+ document.querySelectorAll('.role').forEach(x=>x.classList.remove('active'));b.classList.add('active');
+ ({resident,staff,admin,owner,partner}[b.dataset.role])();
+}));
+resident();
+</script>
+</body>
+</html>
