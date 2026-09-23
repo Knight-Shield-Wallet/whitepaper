@@ -1,0 +1,112 @@
+name: Lens Quick Session Runtime Proof
+
+on:
+  push:
+    branches:
+      - build/midnight-lens-quick-session-v1
+    paths:
+      - 'lens-deploy/web/**'
+      - '.github/workflows/lens-quick-session-runtime-proof.yml'
+  pull_request:
+    paths:
+      - 'lens-deploy/web/**'
+      - '.github/workflows/lens-quick-session-runtime-proof.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  prove-container-routes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build exact Lens web candidate
+        run: |
+          set -euo pipefail
+          docker build -t midnight-lens-quick-session:${GITHUB_SHA} lens-deploy/web
+          docker image inspect midnight-lens-quick-session:${GITHUB_SHA} --format '{{json .RepoDigests}}' > /tmp/image-digests.json
+          docker image inspect midnight-lens-quick-session:${GITHUB_SHA} --format '{{.Id}}' > /tmp/image-id.txt
+
+      - name: Run candidate container
+        run: |
+          set -euo pipefail
+          docker run -d --rm --name midnight-lens-quick-session-proof -p 18080:80 midnight-lens-quick-session:${GITHUB_SHA}
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:18080/health >/tmp/health.json; then exit 0; fi
+            sleep 1
+          done
+          docker logs midnight-lens-quick-session-proof
+          exit 1
+
+      - name: Verify local routes and retired proxy
+        run: |
+          set -euo pipefail
+          curl -fsS http://127.0.0.1:18080/ > /tmp/root.html
+          curl -fsS http://127.0.0.1:18080/session > /tmp/session.html
+          curl -fsS http://127.0.0.1:18080/demo > /tmp/demo.html
+          curl -fsS http://127.0.0.1:18080/marketplace > /tmp/marketplace.html
+          grep -q '"service":"midnight-lens-web"' /tmp/health.json
+          grep -q 'Quick Session' /tmp/root.html
+          grep -q 'Start Photo Session' /tmp/session.html
+          grep -q 'Midnight Lens' /tmp/demo.html
+          grep -q 'Real Buy' /tmp/marketplace.html
+          if grep -R -n 'midnight-lens-ksd\.lovable\.app' lens-deploy/web; then
+            echo 'ERROR: retired Lovable proxy reference remains in candidate'
+            exit 1
+          fi
+
+      - name: Verify Quick Session truth boundary
+        run: |
+          set -euo pipefail
+          grep -q "getUserMedia" lens-deploy/web/session.js
+          grep -q "audio: false" lens-deploy/web/session.js
+          grep -q "stream.getTracks().forEach" lens-deploy/web/session.js
+          grep -q "URL.revokeObjectURL" lens-deploy/web/session.js
+          grep -q "shots = \[\]" lens-deploy/web/session.js
+          ! grep -Eqi 'input[^>]+type=.*file|showOpenFilePicker|showDirectoryPicker' lens-deploy/web/session.html lens-deploy/web/session.js
+          grep -q 'does not verify identity yet' lens-deploy/web/session.html
+          grep -q 'does not claim to prevent leaving the browser' lens-deploy/web/session.html
+          grep -q 'not yet wired' lens-deploy/web/session.html
+
+      - name: Write retained proof receipt
+        run: |
+          set -euo pipefail
+          mkdir -p proof-output
+          IMAGE_ID="$(cat /tmp/image-id.txt)"
+          cat > proof-output/quick-session-container-proof.json <<JSON
+          {
+            "schema": "ksd.midnight-lens.quick-session.container-proof.v1",
+            "source_repository": "${GITHUB_REPOSITORY}",
+            "source_sha": "${GITHUB_SHA}",
+            "workflow_run_id": "${GITHUB_RUN_ID}",
+            "candidate_image_id": "${IMAGE_ID}",
+            "checks": {
+              "nginx_image_build": "PASS",
+              "health_route": "PASS",
+              "root_is_ksd_owned": "PASS",
+              "quick_session_route": "PASS",
+              "demo_route": "PASS",
+              "marketplace_route": "PASS",
+              "legacy_lovable_proxy_absent": "PASS",
+              "camera_api_present": "PASS",
+              "audio_not_requested": "PASS",
+              "gallery_file_picker_absent": "PASS",
+              "session_cleanup_logic_present": "PASS",
+              "truth_boundary_copy_present": "PASS"
+            },
+            "proof_scope": "container_and_static_runtime_only",
+            "android_real_device_proof": "PENDING",
+            "release_status": "NOT_RELEASED"
+          }
+          JSON
+          docker logs midnight-lens-quick-session-proof > proof-output/container.log 2>&1 || true
+          cp /tmp/health.json proof-output/health.json
+
+      - name: Upload proof bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: midnight-lens-quick-session-container-proof-${{ github.sha }}
+          path: proof-output/
+          if-no-files-found: error
+          retention-days: 30
