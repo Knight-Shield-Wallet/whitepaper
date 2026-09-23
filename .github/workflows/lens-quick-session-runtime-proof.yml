@@ -65,7 +65,7 @@ jobs:
           grep -q "audio: false" lens-deploy/web/session.js
           grep -q "stream.getTracks().forEach" lens-deploy/web/session.js
           grep -q "URL.revokeObjectURL" lens-deploy/web/session.js
-          grep -q "shots = \[\]" lens-deploy/web/session.js
+          grep -Eq "shots[[:space:]]*=[[:space:]]*\\[\\]" lens-deploy/web/session.js
           ! grep -Eqi 'input[^>]+type=.*file|showOpenFilePicker|showDirectoryPicker' lens-deploy/web/session.html lens-deploy/web/session.js
           grep -q 'does not verify identity yet' lens-deploy/web/session.html
           grep -q 'cannot stop someone from leaving the browser' lens-deploy/web/session.html
