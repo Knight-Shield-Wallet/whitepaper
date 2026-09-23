@@ -59,9 +59,55 @@ services:
       - traefik-proxy
       - lens-private
 
+  founder-auth:
+    build:
+      context: https://github.com/Knight-Shield-Wallet/whitepaper.git#main:lens-deploy/founder-auth
+    container_name: ksd-founder-auth-rp
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: "8787"
+      KSD_FOUNDER_RP_ID: api.midnight-lens.com
+      KSD_FOUNDER_RP_NAME: Knight Shield Digital
+      KSD_ANDROID_PACKAGE: com.ksd.gameplayer.debug
+      KSD_ANDROID_ORIGIN: ${KSD_ANDROID_ORIGIN}
+      KSD_ANDROID_CERT_SHA256: ${KSD_ANDROID_CERT_SHA256}
+      KSD_FOUNDER_BOOTSTRAP_TOKEN_SHA256: ${KSD_FOUNDER_BOOTSTRAP_TOKEN_SHA256}
+      KSD_FOUNDER_SUBJECT: ksd-founder-1
+      KSD_FOUNDER_LABEL: Founder
+      KSD_FOUNDER_AUTH_STATE_DIR: /data
+    volumes:
+      - founder-auth-state:/data
+    expose:
+      - "8787"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8787/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.ksd-founder-auth.entrypoints=websecure
+      - traefik.http.routers.ksd-founder-auth.rule=Host(`api.midnight-lens.com`) && PathPrefix(`/founder-auth/`)
+      - traefik.http.routers.ksd-founder-auth.tls.certresolver=letsencrypt
+      - traefik.http.routers.ksd-founder-auth.middlewares=ksd-founder-auth-strip
+      - traefik.http.middlewares.ksd-founder-auth-strip.stripprefix.prefixes=/founder-auth
+      - traefik.http.routers.ksd-founder-assetlinks.entrypoints=websecure
+      - traefik.http.routers.ksd-founder-assetlinks.rule=Host(`api.midnight-lens.com`) && Path(`/.well-known/assetlinks.json`)
+      - traefik.http.routers.ksd-founder-assetlinks.tls.certresolver=letsencrypt
+      - traefik.http.services.ksd-founder-auth.loadbalancer.server.port=8787
+    networks:
+      - traefik-proxy
+      - lens-private
+
 networks:
   traefik-proxy:
     external: true
   lens-private:
     name: midnight-lens-private
     driver: bridge
+
+volumes:
+  founder-auth-state:
+    name: ksd-founder-auth-state
