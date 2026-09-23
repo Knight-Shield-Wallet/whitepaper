@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#070b13">
+  <title>Quick Session — Midnight Lens</title>
+  <meta name="description" content="One purpose. Temporary access. Start a camera-only Midnight Lens session without giving access to your gallery or other Lens data.">
+  <link rel="stylesheet" href="/session.css">
+</head>
+<body>
+  <main class="session-shell">
+    <header class="topbar">
+      <a class="brand" href="/">Midnight Lens</a>
+      <span class="scope-pill">Quick Session</span>
+    </header>
+
+    <section id="setup" class="screen active" aria-labelledby="setup-title">
+      <div class="card">
+        <p class="eyebrow">One tap · one purpose · temporary access</p>
+        <h1 id="setup-title">What do you want them to do?</h1>
+
+        <button class="choice selected" type="button" aria-pressed="true">
+          <span class="choice-icon" aria-hidden="true">◎</span>
+          <span><strong>Take Photos</strong><small>Camera only. No gallery or file access.</small></span>
+        </button>
+
+        <h2>Who is using the session?</h2>
+        <div class="identity-grid" role="group" aria-label="Session identity">
+          <button id="guestChoice" class="identity selected" type="button" aria-pressed="true">Guest</button>
+          <button id="nameChoice" class="identity" type="button" aria-pressed="false">@name</button>
+        </div>
+
+        <div id="nameWrap" class="name-wrap hidden">
+          <label for="guestName">KSD @name</label>
+          <input id="guestName" inputmode="text" autocomplete="off" maxlength="40" placeholder="@name">
+          <p class="fine">This V1 records the label locally for the session. It does not verify identity yet.</p>
+        </div>
+
+        <div class="handoff-note">
+          <strong>Before you hand over your phone</strong>
+          <p>For stronger device lock, pin this app or browser screen in Android. This web session cannot stop someone from leaving the browser.</p>
+        </div>
+
+        <button id="startButton" class="primary" type="button">Start Photo Session</button>
+        <a class="secondary-link" href="/">Cancel</a>
+      </div>
+    </section>
+
+    <section id="capture" class="screen" aria-labelledby="capture-title">
+      <div class="capture-head">
+        <div>
+          <p class="eyebrow">Temporary Photo Session</p>
+          <h1 id="capture-title">Take photos</h1>
+          <p id="sessionWho" class="subtle">Guest session</p>
+        </div>
+        <button id="endButtonTop" class="danger" type="button">End Session</button>
+      </div>
+
+      <div class="camera-card">
+        <video id="camera" autoplay playsinline muted></video>
+        <canvas id="frame" class="hidden" aria-hidden="true"></canvas>
+        <div id="cameraStatus" class="camera-status" role="status">Starting camera…</div>
+        <button id="captureButton" class="shutter" type="button" disabled aria-label="Take photo">
+          <span></span>
+        </button>
+      </div>
+
+      <div class="guard-note">
+        <strong>Photo Guard ready</strong>
+        <p>This V1 keeps captures inside this browser session only. Provenance, privacy scanning and Midnight proofs are not yet wired into this capture flow.</p>
+      </div>
+
+      <section class="shots" aria-labelledby="shots-title">
+        <div class="shots-head">
+          <h2 id="shots-title">Session photos</h2>
+          <span id="shotCount">0</span>
+        </div>
+        <div id="shotGrid" class="shot-grid">
+          <p id="emptyState" class="empty">Photos taken here will appear here until the session ends.</p>
+        </div>
+      </section>
+
+      <button id="endButtonBottom" class="end-wide" type="button">End Session &amp; Clear Photos</button>
+    </section>
+
+    <section id="ended" class="screen" aria-labelledby="ended-title">
+      <div class="card ended-card">
+        <p class="eyebrow">Session ended</p>
+        <h1 id="ended-title">Temporary access is closed.</h1>
+        <p>The camera was stopped and this session's captured photo data was removed from the app state.</p>
+        <button id="newSessionButton" class="primary" type="button">Start Another Session</button>
+        <a class="secondary-link" href="/">Back to Midnight Lens</a>
+      </div>
+    </section>
+  </main>
+  <script src="/session.js" defer></script>
+</body>
+</html>
