@@ -44,11 +44,13 @@ jobs:
           set -euo pipefail
           curl -fsS http://127.0.0.1:18080/ > /tmp/root.html
           curl -fsS http://127.0.0.1:18080/session > /tmp/session.html
+          curl -fsS http://127.0.0.1:18080/proof-session > /tmp/proof-session.html
           curl -fsS http://127.0.0.1:18080/demo > /tmp/demo.html
           curl -fsS http://127.0.0.1:18080/marketplace > /tmp/marketplace.html
           grep -q '"service":"midnight-lens-web"' /tmp/health.json
           grep -q 'Quick Session' /tmp/root.html
           grep -q 'Start Photo Session' /tmp/session.html
+          grep -q 'Guided Proof Session' /tmp/proof-session.html
           grep -q 'Midnight Lens' /tmp/demo.html
           grep -q 'Real Buy' /tmp/marketplace.html
           if grep -R -n 'midnight-lens-ksd\.lovable\.app' lens-deploy/web; then
@@ -68,6 +70,10 @@ jobs:
           grep -q 'does not verify identity yet' lens-deploy/web/session.html
           grep -q 'cannot stop someone from leaving the browser' lens-deploy/web/session.html
           grep -q 'not yet wired' lens-deploy/web/session.html
+          node --check lens-deploy/web/session.js
+          node --check lens-deploy/web/proof-session.js
+          grep -q 'guided_quick_session_real_user_journey' lens-deploy/web/proof-session.js
+          grep -q 'secure_cache_deletion_proven: false' lens-deploy/web/proof-session.js
 
       - name: Write retained proof receipt
         run: |
@@ -88,6 +94,8 @@ jobs:
               "quick_session_route": "PASS",
               "demo_route": "PASS",
               "marketplace_route": "PASS",
+              "guided_proof_route": "PASS",
+              "guided_proof_js_syntax": "PASS",
               "legacy_lovable_proxy_absent": "PASS",
               "camera_api_present": "PASS",
               "audio_not_requested": "PASS",
