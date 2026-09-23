@@ -24,6 +24,7 @@ const BOOTSTRAP_TOKEN_SHA256 = requiredEnv("KSD_FOUNDER_BOOTSTRAP_TOKEN_SHA256")
 if (!/^[0-9a-f]{64}$/.test(BOOTSTRAP_TOKEN_SHA256)) throw new Error("KSD_FOUNDER_BOOTSTRAP_TOKEN_SHA256_INVALID");
 const SESSION_TTL_MS = 10 * 60 * 1000;
 const CHALLENGE_TTL_MS = 2 * 60 * 1000;
+const ENROLLMENT_LEASE_TTL_MS = 10 * 60 * 1000;
 const MAX_BODY = 128 * 1024;
 
 fs.mkdirSync(STATE_DIR, { recursive: true });
@@ -45,7 +46,7 @@ function fromBase64url(value) {
 function now() { return Date.now(); }
 
 function defaultState() {
-  return { credentials: [], challenges: {}, sessions: {}, receipts: [] };
+  return { credentials: [], challenges: {}, sessions: {}, enrollmentLease: null, receipts: [] };
 }
 
 function loadState() {
@@ -71,6 +72,7 @@ function prune(state) {
   for (const [token, session] of Object.entries(state.sessions)) {
     if (!session || session.expiresAt <= t) delete state.sessions[token];
   }
+  if (state.enrollmentLease && state.enrollmentLease.expiresAt <= t) state.enrollmentLease = null;
 }
 
 function randomId() {
@@ -123,6 +125,12 @@ function activeSession(state, req) {
   const session = token ? state.sessions[token] : null;
   if (!session || session.expiresAt <= now() || session.founderSubject !== FOUNDER_SUBJECT) return null;
   return { token, ...session };
+}
+
+function activeEnrollmentLease(state) {
+  const lease = state.enrollmentLease;
+  if (!lease || lease.used || lease.expiresAt <= now()) return null;
+  return lease;
 }
 
 function issueChallenge(state, purpose) {
@@ -185,11 +193,32 @@ async function handle(req, res) {
   prune(state);
   const body = await readJson(req);
 
+  if (url.pathname === "/v1/founder/enrollment/lease/open") {
+    if (!bootstrapLeaseValid(req)) {
+      return json(res, 403, { code: "FOUNDER_BOOTSTRAP_NOT_AUTHORIZED" });
+    }
+    const activeCredentials = state.credentials.filter(c => !c.revokedAt);
+    if (activeCredentials.length !== 0) {
+      return json(res, 409, { code: "FOUNDER_ALREADY_ENROLLED" });
+    }
+    const leaseId = randomId();
+    const expiresAt = now() + ENROLLMENT_LEASE_TTL_MS;
+    state.enrollmentLease = { id: leaseId, expiresAt, used: false };
+    record(state, "FOUNDER_ENROLLMENT_LEASE_OPENED", { leaseId, expiresAt: new Date(expiresAt).toISOString() });
+    saveState(state);
+    return json(res, 200, {
+      opened: true,
+      leaseId,
+      expiresAt: new Date(expiresAt).toISOString(),
+      singleUse: true,
+    });
+  }
+
   if (url.pathname === "/v1/founder/passkey/register/options") {
     const session = activeSession(state, req);
-    const firstCredential = state.credentials.length === 0;
-    const bootstrapAuthorized = firstCredential && bootstrapLeaseValid(req);
-    if (!(session || bootstrapAuthorized)) {
+    const firstCredential = state.credentials.filter(c => !c.revokedAt).length === 0;
+    const enrollmentLease = firstCredential ? activeEnrollmentLease(state) : null;
+    if (!(session || enrollmentLease)) {
       return json(res, 403, { code: "FOUNDER_ENROLLMENT_NOT_AUTHORIZED" });
     }
     const options = await generateRegistrationOptions({
@@ -207,7 +236,8 @@ async function handle(req, res) {
     });
     const challengeId = issueChallenge(state, "registration");
     state.challenges[challengeId].challenge = options.challenge;
-    state.challenges[challengeId].authorizedBy = session ? "founder-session" : "bootstrap-lease";
+    state.challenges[challengeId].authorizedBy = session ? "founder-session" : "server-enrollment-lease";
+    if (enrollmentLease) state.challenges[challengeId].enrollmentLeaseId = enrollmentLease.id;
     saveState(state);
     return json(res, 200, { challengeId, requestJson: JSON.stringify(options) });
   }
@@ -220,9 +250,12 @@ async function handle(req, res) {
       saveState(state);
       return json(res, 403, { code: "FOUNDER_SESSION_REQUIRED" });
     }
-    if (challenge.authorizedBy === "bootstrap-lease" && !bootstrapLeaseValid(req)) {
-      saveState(state);
-      return json(res, 403, { code: "FOUNDER_ENROLLMENT_LEASE_REQUIRED" });
+    if (challenge.authorizedBy === "server-enrollment-lease") {
+      const lease = activeEnrollmentLease(state);
+      if (!lease || lease.id !== challenge.enrollmentLeaseId) {
+        saveState(state);
+        return json(res, 403, { code: "FOUNDER_ENROLLMENT_LEASE_REQUIRED" });
+      }
     }
     const verification = await verifyRegistrationResponse({
       response,
@@ -250,6 +283,10 @@ async function handle(req, res) {
     };
     if (existing >= 0) state.credentials[existing] = stored;
     else state.credentials.push(stored);
+    if (challenge.authorizedBy === "server-enrollment-lease" && state.enrollmentLease?.id === challenge.enrollmentLeaseId) {
+      state.enrollmentLease.used = true;
+      state.enrollmentLease.expiresAt = now();
+    }
     record(state, "PASSKEY_REGISTERED", { credentialId: cred.id, credentialCount: state.credentials.filter(c => !c.revokedAt).length });
     saveState(state);
     return json(res, 200, {
