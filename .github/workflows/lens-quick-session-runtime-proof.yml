@@ -62,7 +62,7 @@ jobs:
         run: |
           set -euo pipefail
           grep -q "getUserMedia" lens-deploy/web/session.js
-          grep -q "audio: false" lens-deploy/web/session.js
+          grep -Eq "audio:[[:space:]]*false" lens-deploy/web/session.js
           grep -q "stream.getTracks().forEach" lens-deploy/web/session.js
           grep -q "URL.revokeObjectURL" lens-deploy/web/session.js
           grep -Eq "shots[[:space:]]*=[[:space:]]*\\[\\]" lens-deploy/web/session.js
