@@ -15,6 +15,10 @@ RUN rm -f /etc/nginx/conf.d/default.conf && printf '%s\n' \
 '  location = /session.html { try_files $uri =404; }' \
 '  location = /session.css { try_files $uri =404; }' \
 '  location = /session.js { try_files $uri =404; }' \
+'  location = /proof-session { try_files /proof-session.html =404; }' \\
+'  location = /proof-session.html { try_files $uri =404; }' \\
+'  location = /proof-session.css { try_files $uri =404; }' \\
+'  location = /proof-session.js { try_files $uri =404; }' \\
 '  location = /demo { try_files /demo.html =404; }' \
 '  location = /demo.html { try_files $uri =404; }' \
 '  location = /demo.js { try_files $uri =404; }' \
