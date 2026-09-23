@@ -260,7 +260,7 @@ async function handle(req, res) {
     const verification = await verifyRegistrationResponse({
       response,
       expectedChallenge: challenge.challenge,
-      expectedOrigin: [WEB_ORIGIN, ANDROID_ORIGIN],
+      expectedOrigin: challenge.authorizedBy === "server-enrollment-lease" ? ANDROID_ORIGIN : [WEB_ORIGIN, ANDROID_ORIGIN],
       expectedRPID: RP_ID,
       requireUserVerification: true,
     });
