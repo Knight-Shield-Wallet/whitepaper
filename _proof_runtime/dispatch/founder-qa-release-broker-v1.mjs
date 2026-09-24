@@ -9,6 +9,7 @@ export function founderQaHandoffBoundary({
   spentNonces,
   outputDir,
   filename,
+  expectedChannel = 'founder_qa_handoff',
   now = new Date(),
 }) {
   if (!clearance) {
@@ -18,7 +19,7 @@ export function founderQaHandoffBoundary({
   const authorization = brokerAuthorizeDistribution({
     candidateBytes,
     clearance,
-    expectedChannel: 'founder_qa_handoff',
+    expectedChannel,
     gatekeeperPublicKeyStore,
     spentNonces,
     now,
