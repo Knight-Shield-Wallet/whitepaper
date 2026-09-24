@@ -189,7 +189,7 @@ content.innerHTML=`
   <div class="quick" onclick="openDocuments()"><div>📄</div><strong>Documents & Forms</strong><span class="tiny">Open common Village forms, fill them, sign them and keep your copy</span></div>
   <div class="quick" onclick="openJourney()"><div>🧭</div><strong>My Journey</strong><span class="tiny">See what you're working on, what comes next and who is helping</span></div>
 </div>
-<div class="help"><strong>Village Secretary</strong><p class="tiny">Ask about Village information, appointments, requests, forms, or where something should go. The Secretary can organize and route work, but cannot make housing, medical, financial, eligibility, or disciplinary decisions.</p><button class="btn secondary" onclick="openSecretary()">Talk to the Secretary</button></div>
+<div class="help"><strong>Village Secretary Desk</strong><p class="tiny">Ask about Village information, appointments, requests, forms, or where something should go. The public desk is coordinated by the Office Manager and cannot make housing, medical, financial, eligibility, or disciplinary decisions.</p><button class="btn secondary" onclick="openSecretary()">Talk to the Secretary Desk</button></div>
 <div class="card"><h3>My Unit</h3><p>Wi-Fi • Garbage & recycling • Unit information • Emergency contacts</p><span class="badge good">No open urgent issues</span></div>`;
 }
 
@@ -210,6 +210,7 @@ content.innerHTML=`
 <div class="statgrid"><div class="stat"><b>18</b><span>Demo resident accounts</span></div><div class="stat"><b>6</b><span>Active services</span></div><div class="stat"><b>4</b><span>Approved partners</span></div><div class="stat"><b>92%</b><span>Info up to date</span></div></div>
 <div class="grid2">
 <div class="card"><h3>Manage Village Information</h3><p>Announcements, resources, forms, providers, community rules and routing.</p><button class="btn secondary">Open content manager</button></div>
+<div class="card"><h3>AI Office Team</h3><p>One Office Manager coordinates Matt's Secretary and Tamara's Secretary, prevents duplicate work and escalates anything requiring human authority.</p><button class="btn secondary" onclick="openOfficeTeam()">Open office team</button></div>
 <div class="card"><h3>Pilot Feedback</h3><p>Residents most value unit requests, clear information and one-tap help routing.</p><span class="badge good">Demo trend</span></div>
 </div>`;
 }
@@ -223,7 +224,8 @@ content.innerHTML=`
 <div class="card"><h3>Pilot Safety Gate</h3><p>Legal, privacy, consent, retention, security and role-control requirements must pass before real resident data.</p><span class="badge red">NOT CLEARED FOR LIVE DATA</span></div>
 <div class="card"><h3>Dust Bowl Cafe — Free Trial</h3><p>Owner-only operations workspace bonus during the pilot. Optional after the trial. Qualifying charity/non-profit organizations receive 20% off standard subscription pricing.</p><span class="badge warn">TRIAL</span></div>
 </div>
-<div class="card" style="margin-top:16px"><h3>What needs attention</h3><p>2 unresolved resident requests • 1 partner response overdue • privacy gate still incomplete.</p></div>`;
+<div class="card" style="margin-top:16px"><h3>What needs attention</h3><p>2 unresolved resident requests • 1 partner response overdue • privacy gate still incomplete.</p></div>
+<div class="card" style="margin-top:16px"><h3>Office Team</h3><p>Office Manager → Matt's Secretary + Tamara's Secretary</p><button class="btn secondary" onclick="openOfficeTeam()">Open office team</button></div>`;
 }
 
 function partner(){
@@ -262,8 +264,11 @@ modalbox.innerHTML='<h3>Documents & Forms</h3><p class="tiny">Common Village doc
 function openLeaseFlow(){
 modalbox.innerHTML='<h3>Residential Tenancy Agreement</h3><div class="notice"><strong>Document ready:</strong> The fillable lease has been prepared for the website document library.</div><p>Live flow: <strong>Open → Fill → Midnight Lens check → Lens Sign → Completed copy + receipt.</strong></p><p class="tiny">The demo does not submit real resident information or execute a real signature yet. Those actions remain behind the pilot privacy, legal, security and authorization gates.</p><div class="actions"><button class="btn secondary" onclick="openDocuments()">Back</button><button class="btn primary" onclick="submitted(\'Document flow preview complete — demo only.\')">Preview flow</button></div>';modal.classList.add('show')
 }
+function openOfficeTeam(){
+modalbox.innerHTML='<h3>AI Office Team</h3><p class="tiny">The Office Manager coordinates both secretaries. Each secretary has a separate human principal and work queue. Cross-over work is routed through the manager so nothing is duplicated, lost, or silently reassigned.</p><div class="card" style="margin:12px 0"><strong>Office Manager</strong><p class="tiny">Coordinates priorities, resolves overlap, checks handoffs, monitors stalled work and escalates decisions that require Matt or Tamara.</p><span class="badge good">COORDINATING</span></div><div class="grid2" style="margin-top:12px"><div class="card"><strong>Matt&#39;s Secretary</strong><p class="tiny">Handles Matt&#39;s scheduling, document preparation, follow-ups, information routing and administrative queue. Cannot make Matt&#39;s decisions.</p><span class="badge">MATT QUEUE</span></div><div class="card"><strong>Tamara&#39;s Secretary</strong><p class="tiny">Handles Tamara&#39;s scheduling, document preparation, follow-ups, information routing and administrative queue. Cannot make Tamara&#39;s decisions.</p><span class="badge">TAMARA QUEUE</span></div></div><div class="notice"><strong>Manager rule:</strong> one owner per task, visible handoffs, no duplicate assignments, and anything requiring human authority goes back to the correct person.</div><div class="actions"><button class="btn secondary" onclick="closeModal()">Close</button></div>';modal.classList.add('show')
+}
 function openSecretary(){
-modalbox.innerHTML='<h3>Village Secretary</h3><p class="tiny"><strong>Demo office chain:</strong> Human Admin → AI Office Manager → AI Secretary. The Secretary stays inside secretarial duties, uses minimum necessary information, and escalates anything outside its authority.</p><div class="field"><label>What do you need?</label><input id="secretaryq" placeholder="Example: I need help with a form or maintenance request"/></div><div class="actions"><button class="btn secondary" onclick="closeModal()">Close</button><button class="btn primary" onclick="secretaryReply()">Send</button></div><div id="secretaryanswer" class="notice">No real resident data is processed in this demo.</div>';modal.classList.add('show')
+modalbox.innerHTML='<h3>Village Secretary</h3><p class="tiny"><strong>Demo office chain:</strong> Human Admins (Matt / Tamara) → AI Office Manager → Matt's Secretary / Tamara's Secretary → Village Secretary Desk. The Secretary Desk stays inside secretarial duties, uses minimum necessary information, and routes internal work through the Office Manager to the correct secretary.</p><div class="field"><label>What do you need?</label><input id="secretaryq" placeholder="Example: I need help with a form or maintenance request"/></div><div class="actions"><button class="btn secondary" onclick="closeModal()">Close</button><button class="btn primary" onclick="secretaryReply()">Send</button></div><div id="secretaryanswer" class="notice">No real resident data is processed in this demo.</div>';modal.classList.add('show')
 }
 function secretaryReply(){
  const q=(document.getElementById('secretaryq').value||'').trim().toLowerCase();
