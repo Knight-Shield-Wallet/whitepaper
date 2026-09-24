@@ -39,8 +39,8 @@ jobs:
             exit 1
           fi
           jq -e '
-            .release_class == "android_founder_qa" and
-            .channel == "founder_qa_handoff" and
+            .release_class == "midnight_lens_android_founder_qa" and
+            .channel == "midnight_lens_founder_qa_handoff" and
             .verifier_results.package_identity.result == "FAIL" and
             ((.verifier_results.package_identity.reason_codes | index("APK_STATIC_INSPECTION_FAILED")) != null) and
             .gatekeeper.status == "DENY" and
