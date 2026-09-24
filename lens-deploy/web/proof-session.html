@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#070b13">
+  <title>Guided Proof Session — Midnight Lens</title>
+  <link rel="stylesheet" href="/proof-session.css">
+</head>
+<body>
+  <main class="proof-shell">
+    <header class="topbar">
+      <a class="brand" href="/">Midnight Lens</a>
+      <span class="badge">Founder / QA</span>
+    </header>
+
+    <section id="startView" class="card">
+      <p class="eyebrow">Guided Proof Session</p>
+      <h1>Test the whole journey.</h1>
+      <p class="lede">Lens will guide you through the real Quick Session from beginning to end, automatically record what it can verify, and ask you only for the checks that require a human.</p>
+      <div class="journey">
+        <span>Open feature</span><b>→</b><span>Guest</span><b>→</b><span>Camera</span><b>→</b><span>Capture</span><b>→</b><span>Remove</span><b>→</b><span>Capture again</span><b>→</b><span>End</span><b>→</b><span>Receipt</span>
+      </div>
+      <div class="notice"><strong>What this proves</strong><p>This V1 proves the bounded Quick Session user journey on this device/browser. It does not prove secure deletion of browser caches, verified identity, Photo Guard provenance, C2PA, ZK/Midnight issuance, or OS-level containment.</p></div>
+      <button id="beginProof" class="primary" type="button">Start Guided Proof</button>
+      <a class="secondary" href="/">Cancel</a>
+    </section>
+
+    <section id="reviewView" class="card hidden">
+      <p class="eyebrow">Final human check</p>
+      <h1>Did the journey look correct and usable?</h1>
+      <p class="lede">The automatic checks are complete. Confirm only the part software cannot honestly judge for you: whether the screens were readable, understandable, and visually usable.</p>
+      <div id="autoResults" class="results"></div>
+      <div class="human-actions">
+        <button id="visualPass" class="primary" type="button">Yes — looked correct</button>
+        <button id="visualFail" class="danger" type="button">No — visual problem</button>
+      </div>
+    </section>
+
+    <section id="receiptView" class="card hidden">
+      <p class="eyebrow">Proof receipt</p>
+      <h1 id="finalVerdict">—</h1>
+      <div id="receiptSummary" class="results"></div>
+      <pre id="receiptJson"></pre>
+      <button id="copyReceipt" class="primary" type="button">Copy Receipt JSON</button>
+      <button id="newProof" class="secondary-btn" type="button">Run Again</button>
+      <a class="secondary" href="/">Back to Midnight Lens</a>
+    </section>
+  </main>
+  <script src="/proof-session.js" defer></script>
+</body>
+</html>
