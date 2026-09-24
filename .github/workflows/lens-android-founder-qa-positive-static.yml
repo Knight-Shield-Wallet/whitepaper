@@ -1,0 +1,76 @@
+name: Lens Android Founder QA Positive Static Proof
+
+on:
+  push:
+    branches:
+      - build/midnight-lens-quick-session-v1
+    paths:
+      - '_proof_runtime/proof-builds/midnight-lens-android-qa/**'
+      - '_proof_runtime/dispatch/**'
+      - '_proof_runtime/authority/proof-manifests/**'
+      - '.github/workflows/lens-android-founder-qa-positive-static.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-prove-static:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Java 21
+        run: |
+          set -euo pipefail
+          JAVA21="${JAVA_HOME_21_X64:-}"
+          if [ -z "$JAVA21" ]; then
+            JAVA21="$(find /opt/hostedtoolcache/Java* -type f -path '*/bin/java' 2>/dev/null | grep '/21\.' | head -1 | sed 's#/bin/java##')"
+          fi
+          test -x "$JAVA21/bin/java"
+          echo "JAVA_HOME=$JAVA21" >> "$GITHUB_ENV"
+          echo "$JAVA21/bin" >> "$GITHUB_PATH"
+
+      - name: Set up Gradle 8.13
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.13'
+
+      - name: Compile Midnight Lens QA candidate locally
+        working-directory: _proof_runtime/proof-builds/midnight-lens-android-qa
+        run: |
+          set -euo pipefail
+          gradle :app:assembleDebug --no-daemon
+          test -s app/build/outputs/apk/debug/app-debug.apk
+          sha256sum app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Run Lens package security privacy proof
+        run: |
+          set -euo pipefail
+          mkdir -p proof-output
+          node _proof_runtime/dispatch/run-midnight-lens-founder-qa-static-proof-v1.mjs             _proof_runtime/proof-builds/midnight-lens-android-qa/app/build/outputs/apk/debug/app-debug.apk             proof-output/midnight-lens-founder-qa-static.proof.json
+          jq -e '
+            .release_class == "midnight_lens_android_founder_qa" and
+            .verifier_results.candidate_identity.result == "PASS" and
+            .verifier_results.package_identity.result == "PASS" and
+            .verifier_results.security_static.result == "PASS" and
+            .verifier_results.privacy_static.result == "PASS" and
+            .signatures_valid == true and
+            .static_stage_pass == true and
+            .gatekeeper_clearance_attempted == false and
+            .broker_handoff_attempted == false and
+            .distributable_apk_created == false
+          ' proof-output/midnight-lens-founder-qa-static.proof.json >/dev/null
+
+      - name: Assert APK remains non-distributed
+        run: |
+          set -euo pipefail
+          test -s _proof_runtime/proof-builds/midnight-lens-android-qa/app/build/outputs/apk/debug/app-debug.apk
+          test ! -e proof-output/Midnight-Lens-Founder-QA.apk
+
+      - name: Retain proof receipt only
+        uses: actions/upload-artifact@v4
+        with:
+          name: midnight-lens-founder-qa-positive-static-proof
+          path: proof-output/midnight-lens-founder-qa-static.proof.json
+          if-no-files-found: error
+          retention-days: 30
