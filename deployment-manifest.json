@@ -1,0 +1,33 @@
+{
+  "artifact": "ksdlabs-public-site-v1",
+  "canonical_domain": "ksdlabs.com",
+  "source_repo_target": "Knight-Shield-Wallet/ksdlabs-site",
+  "hosting": {
+    "primary": "cloudflare-pages",
+    "fallbacks": [
+      "firebase-hosting",
+      "github-pages"
+    ],
+    "hostinger_role": "domain-and-dns-only"
+  },
+  "privacy": {
+    "public_source_only": true,
+    "secrets_allowed": false,
+    "private_runtime_dependency": false
+  },
+  "pages": [
+    "/",
+    "/products/",
+    "/midnight-lens/",
+    "/dust-bowl-cafe/",
+    "/dispatch/",
+    "/catalogue/",
+    "/about/",
+    "/contact/"
+  ],
+  "brand": {
+    "logo_mode": "text-until-exact-locked-asset-is-added",
+    "approximate_logo_forbidden": true
+  },
+  "status": "STAGING_NOT_DEPLOYED"
+}
