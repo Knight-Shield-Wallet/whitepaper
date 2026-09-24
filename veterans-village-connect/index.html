@@ -115,7 +115,7 @@ footer{background:#142b3e;color:#d9e1e6;padding:32px 18px}.footerin{max-width:11
     <div class="grid2">
       <div class="card"><h3>Dignity-first referrals</h3><p>A resident can ask for food, fuel, transportation or other help. With consent, an authorized staff member can send a verified referral to an approved partner without forcing the resident to retell their entire situation.</p></div>
       <div class="card"><h3>Partner protection</h3><p>Partners can see whether materially similar assistance was recently fulfilled where consent and program rules allow, without gaining broad access to resident information.</p></div>
-      <div class="card"><h3>AI as a helper, not a judge</h3><p>AI can warn, route and summarize. It cannot decide tenancy, punish residents, deny support, or make disciplinary decisions.</p></div>
+      <div class="card"><h3>AI office support, not decision authority</h3><p>AI can warn, route and summarize. It cannot decide tenancy, punish residents, deny support, or make disciplinary decisions.</p></div>
       <div class="card"><h3>Hard pilot boundary</h3><p>No medical records, diagnoses, medications, VAC claim files, banking credentials, unrestricted financial records or clinical communications in the initial pilot.</p></div>
     </div>
   </div>
@@ -187,7 +187,7 @@ content.innerHTML=`
   <div class="quick" onclick="openCommunity()"><div>💬</div><strong>Community Board</strong><span class="tiny">Rides, errands, tools and events</span></div>
   <div class="quick" onclick="openAppointment()"><div>📅</div><strong>Book a Service</strong><span class="tiny">See visiting services and time slots</span></div>
 </div>
-<div class="help"><strong>Ask the Village Assistant</strong><p class="tiny">Try: “When is the doctor here next?” or “Who helps with food delivery?”</p><button class="btn secondary" onclick="assistantAnswer()">Ask a question</button></div>
+<div class="help"><strong>Village Secretary</strong><p class="tiny">Ask about Village information, appointments, requests, forms, or where something should go. The Secretary can organize and route work, but cannot make housing, medical, financial, eligibility, or disciplinary decisions.</p><button class="btn secondary" onclick="openSecretary()">Talk to the Secretary</button></div>
 <div class="card"><h3>My Unit</h3><p>Wi-Fi • Garbage & recycling • Unit information • Emergency contacts</p><span class="badge good">No open urgent issues</span></div>`;
 }
 
@@ -251,8 +251,20 @@ modalbox.innerHTML='<h3>Private may be better</h3><p>This looks like a concern t
 function openAppointment(){
 modalbox.innerHTML='<h3>Visiting Services</h3><div class="field"><label>Service</label><select><option>Visiting Doctor</option><option>Counsellor</option><option>Financial Advisor</option><option>Veteran Service Representative</option></select></div><div class="field"><label>Available time</label><select><option>1:00 PM</option><option>1:30 PM</option><option>2:30 PM</option><option>3:30 PM</option></select></div><div class="notice">Demo only. No medical records or clinical information are stored.</div><div class="actions"><button class="btn secondary" onclick="closeModal()">Cancel</button><button class="btn primary" onclick="submitted(\'Appointment time reserved in demo.\')">Confirm privately</button></div>';modal.classList.add('show')
 }
-function assistantAnswer(){
-modalbox.innerHTML='<h3>Village Assistant</h3><div class="field"><label>Ask a question</label><input id="q" placeholder="When is the doctor here next?"/></div><div class="actions"><button class="btn secondary" onclick="closeModal()">Close</button><button class="btn primary" onclick="document.getElementById(\'answer\').innerHTML=\'The next demo visiting-doctor session is shown as 1:00–4:00 PM today. For real use, answers would come only from approved Village information.\'">Ask</button></div><div id="answer" class="notice">The assistant does not make housing, medical, financial or eligibility decisions.</div>';modal.classList.add('show')
+function openSecretary(){
+modalbox.innerHTML='<h3>Village Secretary</h3><p class="tiny"><strong>Demo office chain:</strong> Human Admin → AI Office Manager → AI Secretary. The Secretary stays inside secretarial duties, uses minimum necessary information, and escalates anything outside its authority.</p><div class="field"><label>What do you need?</label><input id="secretaryq" placeholder="Example: I need help with a form or maintenance request"/></div><div class="actions"><button class="btn secondary" onclick="closeModal()">Close</button><button class="btn primary" onclick="secretaryReply()">Send</button></div><div id="secretaryanswer" class="notice">No real resident data is processed in this demo.</div>';modal.classList.add('show')
+}
+function secretaryReply(){
+ const q=(document.getElementById('secretaryq').value||'').trim().toLowerCase();
+ let msg='';
+ if(!q){msg='Tell me what you need and I will route it to the right demo pathway.'}
+ else if(q.includes('doctor')||q.includes('appointment')||q.includes('book')){msg='I can help organize an appointment request. The demo shows visiting services and available time slots. I will not collect clinical details here.'}
+ else if(q.includes('heat')||q.includes('maintenance')||q.includes('broken')||q.includes('repair')){msg='I can open a maintenance request and track its status. I only need the issue category and a short description.'}
+ else if(q.includes('form')||q.includes('paperwork')||q.includes('vac')){msg='I can identify the approved form or route a paperwork request. I will not make a benefits or eligibility decision.'}
+ else if(q.includes('housing')||q.includes('eligible')||q.includes('eligibility')){msg='I can explain the published housing process and route a question to authorized staff. Eligibility decisions stay with the responsible human organization.'}
+ else if(q.includes('complaint')||q.includes('manager')||q.includes('discipline')){msg='This should go privately to management. I can route it, but I cannot discipline anyone or decide tenancy or consequences.'}
+ else {msg='I can organize this request, identify the responsible pathway, and keep a demo status receipt. If it requires authority beyond secretarial duties, I escalate it to the AI Office Manager or human administrator.'}
+ document.getElementById('secretaryanswer').innerHTML='<strong>Secretary:</strong> '+msg+'<br><span class="tiny">Demo receipt: request classified • minimum disclosure • no external action taken</span>';
 }
 function submitted(msg){modalbox.innerHTML='<h3>Done</h3><p>'+msg+'</p><div class="actions"><button class="btn primary" onclick="closeModal()">Close</button></div>'}
 function closeModal(){modal.classList.remove('show')}
