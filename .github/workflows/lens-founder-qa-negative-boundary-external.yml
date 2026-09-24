@@ -18,12 +18,19 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Execute mirrored Lens-specific Android founder QA deny proof
+        id: boundary
         run: |
           set -euo pipefail
           rm -rf proof-output
           node _proof_runtime/dispatch/run-midnight-lens-founder-qa-negative-boundary-v1.mjs proof-output
+          STATUS="$(jq -r '.broker.status' proof-output/midnight-lens-founder-qa-negative-boundary.proof.json)"
+          if [ "$STATUS" = "ALLOW" ]; then
+            echo "allowed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "allowed=false" >> "$GITHUB_OUTPUT"
+          fi
 
-      - name: Assert no APK materialized
+      - name: Assert deny receipt and zero materialization
         run: |
           set -euo pipefail
           test -f proof-output/midnight-lens-founder-qa-negative-boundary.proof.json
@@ -35,9 +42,7 @@ jobs:
             .release_class == "android_founder_qa" and
             .channel == "founder_qa_handoff" and
             .verifier_results.package_identity.result == "FAIL" and
-            (.verifier_results.package_identity.reason_codes | index("APK_STATIC_INSPECTION_FAILED")) != null
-          ' proof-output/midnight-lens-founder-qa-negative-boundary.proof.json >/dev/null
-          jq -e '
+            ((.verifier_results.package_identity.reason_codes | index("APK_STATIC_INSPECTION_FAILED")) != null) and
             .gatekeeper.status == "DENY" and
             .gatekeeper.clearance_issued == false and
             .broker.status == "DENY" and
@@ -48,6 +53,16 @@ jobs:
             .assertions.apk_not_materialized == true and
             .assertions.no_apk_in_handoff == true
           ' proof-output/midnight-lens-founder-qa-negative-boundary.proof.json >/dev/null
+          test "${{ steps.boundary.outputs.allowed }}" = "false"
+
+      - name: Founder QA APK handoff — broker ALLOW only
+        if: steps.boundary.outputs.allowed == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: MIDNIGHT-LENS-FOUNDER-QA-APK
+          path: proof-output/handoff/*.apk
+          if-no-files-found: error
+          retention-days: 1
 
       - name: Retain denial receipt only
         uses: actions/upload-artifact@v4
