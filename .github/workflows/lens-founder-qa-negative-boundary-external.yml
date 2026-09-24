@@ -35,7 +35,7 @@ jobs:
             .release_class == "android_founder_qa" and
             .channel == "founder_qa_handoff" and
             .verifier_results.package_identity.result == "FAIL" and
-            .verifier_results.package_identity.reason_codes | index("APK_STATIC_INSPECTION_FAILED")
+            (.verifier_results.package_identity.reason_codes | index("APK_STATIC_INSPECTION_FAILED")) != null
           ' proof-output/midnight-lens-founder-qa-negative-boundary.proof.json >/dev/null
           jq -e '
             .gatekeeper.status == "DENY" and
