@@ -5,8 +5,8 @@ on:
     branches:
       - build/midnight-lens-quick-session-v1
     paths:
+      - '_proof_runtime/**'
       - '.github/workflows/lens-founder-qa-negative-boundary-external.yml'
-  workflow_dispatch:
 
 permissions:
   contents: read
@@ -15,19 +15,13 @@ jobs:
   prove-runtime-repo-deny:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout KSD runtime proof branch
-        uses: actions/checkout@v4
-        with:
-          repository: Knight-Shield-Wallet/ksd-pentagon-runtime
-          ref: build/midnight-lens-guided-proof-apk-v1
-          path: runtime
+      - uses: actions/checkout@v4
 
-      - name: Execute Lens-specific Android founder QA deny proof
-        working-directory: runtime
+      - name: Execute mirrored Lens-specific Android founder QA deny proof
         run: |
           set -euo pipefail
-          rm -rf ../proof-output
-          node dispatch/run-midnight-lens-founder-qa-negative-boundary-v1.mjs ../proof-output
+          rm -rf proof-output
+          node _proof_runtime/dispatch/run-midnight-lens-founder-qa-negative-boundary-v1.mjs proof-output
 
       - name: Assert no APK materialized
         run: |
@@ -41,10 +35,17 @@ jobs:
             .release_class == "android_founder_qa" and
             .channel == "founder_qa_handoff" and
             .verifier_results.package_identity.result == "FAIL" and
+            .verifier_results.package_identity.reason_codes | index("APK_STATIC_INSPECTION_FAILED")
+          ' proof-output/midnight-lens-founder-qa-negative-boundary.proof.json >/dev/null
+          jq -e '
             .gatekeeper.status == "DENY" and
             .gatekeeper.clearance_issued == false and
             .broker.status == "DENY" and
             .broker.materialized == false and
+            .assertions.defective_android_candidate_denied == true and
+            .assertions.clearance_not_issued == true and
+            .assertions.founder_qa_handoff_denied == true and
+            .assertions.apk_not_materialized == true and
             .assertions.no_apk_in_handoff == true
           ' proof-output/midnight-lens-founder-qa-negative-boundary.proof.json >/dev/null
 
