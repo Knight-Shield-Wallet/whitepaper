@@ -8,6 +8,7 @@ const manifestDir = join(here, '..', 'authority', 'proof-manifests');
 const MANIFEST_FILES = Object.freeze({
   android_founder_qa: 'android_founder_qa.v1.json',
   android_release: 'android_release.v1.json',
+  midnight_lens_android_founder_qa: 'midnight_lens_android_founder_qa.v1.json',
   proof_boundary_canary: 'proof_boundary_canary.v1.json',
 });
 
