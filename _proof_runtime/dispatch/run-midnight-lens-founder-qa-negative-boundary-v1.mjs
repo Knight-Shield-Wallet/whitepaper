@@ -31,7 +31,7 @@ writeFileSync(defectiveApkPath, candidateBytes);
 const now = new Date();
 const session = openReleaseSession({
   candidateBytes,
-  releaseClass: 'android_founder_qa',
+  releaseClass: 'midnight_lens_android_founder_qa',
   manifestStore: authorityManifestStore,
   now,
 });
@@ -81,7 +81,7 @@ const issuance = gatekeeperIssueReleaseClearance({
   manifestStore: authorityManifestStore,
   ledger,
   verifierKeyStore,
-  channel: 'founder_qa_handoff',
+  channel: 'midnight_lens_founder_qa_handoff',
   gatekeeperKeyId,
   gatekeeperPrivateKey: gatekeeper.privateKey,
   gatekeeperImplementationDigest,
@@ -97,6 +97,7 @@ const broker = founderQaHandoffBoundary({
   spentNonces: new Set(),
   outputDir: handoffDir,
   filename: 'Midnight-Lens-Founder-QA.apk',
+  expectedChannel: 'midnight_lens_founder_qa_handoff',
   now,
 });
 
@@ -104,7 +105,7 @@ const proof = {
   schema: 'ksd.midnight-lens.android-founder-qa.negative-boundary.v1',
   source_sha: process.env.GITHUB_SHA || null,
   release_class: session.release_class,
-  channel: 'founder_qa_handoff',
+  channel: 'midnight_lens_founder_qa_handoff',
   candidate_sha256: sha256Bytes(candidateBytes),
   candidate_byte_length: candidateBytes.length,
   candidate_fixture: 'deliberately malformed APK bytes',
