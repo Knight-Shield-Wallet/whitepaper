@@ -1,0 +1,57 @@
+name: Lens Founder QA Negative Boundary External Proof
+
+on:
+  push:
+    branches:
+      - build/midnight-lens-quick-session-v1
+    paths:
+      - '.github/workflows/lens-founder-qa-negative-boundary-external.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  prove-runtime-repo-deny:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout KSD runtime proof branch
+        uses: actions/checkout@v4
+        with:
+          repository: Knight-Shield-Wallet/ksd-pentagon-runtime
+          ref: build/midnight-lens-guided-proof-apk-v1
+          path: runtime
+
+      - name: Execute Lens-specific Android founder QA deny proof
+        working-directory: runtime
+        run: |
+          set -euo pipefail
+          rm -rf ../proof-output
+          node dispatch/run-midnight-lens-founder-qa-negative-boundary-v1.mjs ../proof-output
+
+      - name: Assert no APK materialized
+        run: |
+          set -euo pipefail
+          test -f proof-output/midnight-lens-founder-qa-negative-boundary.proof.json
+          if find proof-output -type f -iname '*.apk' | grep -q .; then
+            echo 'ERROR: APK reached proof output'
+            exit 1
+          fi
+          jq -e '
+            .release_class == "android_founder_qa" and
+            .channel == "founder_qa_handoff" and
+            .verifier_results.package_identity.result == "FAIL" and
+            .gatekeeper.status == "DENY" and
+            .gatekeeper.clearance_issued == false and
+            .broker.status == "DENY" and
+            .broker.materialized == false and
+            .assertions.no_apk_in_handoff == true
+          ' proof-output/midnight-lens-founder-qa-negative-boundary.proof.json >/dev/null
+
+      - name: Retain denial receipt only
+        uses: actions/upload-artifact@v4
+        with:
+          name: lens-founder-qa-negative-boundary-denial
+          path: proof-output/midnight-lens-founder-qa-negative-boundary.proof.json
+          if-no-files-found: error
+          retention-days: 30
