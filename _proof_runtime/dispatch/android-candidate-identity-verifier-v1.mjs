@@ -35,7 +35,7 @@ function requireSession(session) {
   requireNonEmptyString(session.release_class, 'release_class');
   requireNonEmptyString(session.manifest_digest, 'manifest_digest');
   requireNonEmptyString(session.policy_version, 'policy_version');
-  if (!['android_founder_qa', 'android_release'].includes(session.release_class)) {
+  if (!['android_founder_qa', 'android_release', 'midnight_lens_android_founder_qa'].includes(session.release_class)) {
     throw new Error(`ANDROID_CANDIDATE_IDENTITY:UNSUPPORTED_RELEASE_CLASS:${session.release_class}`);
   }
 }
