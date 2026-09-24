@@ -178,7 +178,7 @@ footer{background:#142b3e;color:#d9e1e6;padding:32px 18px}.footerin{max-width:11
 const content=document.getElementById('content'), sidebar=document.getElementById('sidebar'), modal=document.getElementById('modal'), modalbox=document.getElementById('modalbox');
 
 function resident(){
-sidebar.innerHTML='<div class="sideitem active">Home</div><div class="sideitem" onclick="openJourney()">My Journey</div><div class="sideitem">My Unit</div><div class="sideitem">Community</div><div class="sideitem">Services</div><div class="sideitem">Help</div><div class="sideitem" onclick="openDocuments()">Documents & Forms</div><div class="sideitem">Resources</div><div class="sideitem">Messages</div>';
+sidebar.innerHTML='<div class="sideitem active">Home</div><div class="sideitem" onclick="openJourney()">My Journey</div><div class="sideitem">My Unit</div><div class="sideitem">Community</div><div class="sideitem">Services</div><div class="sideitem">Help</div><div class="sideitem" onclick="openDocuments()">Documents & Forms</div><div class="sideitem">Resources</div><div class="sideitem" onclick="openMessageMatt()">Message Matt</div><div class="sideitem">Messages</div>';
 content.innerHTML=`
 <h3>Good afternoon</h3><div class="notice"><strong>Today at the Village</strong><br>Visiting doctor: 1:00–4:00 PM • Community coffee: 6:30 PM</div>
 <div class="quickgrid">
@@ -188,13 +188,14 @@ content.innerHTML=`
   <div class="quick" onclick="openAppointment()"><div>📅</div><strong>Book a Service</strong><span class="tiny">See visiting services and time slots</span></div>
   <div class="quick" onclick="openDocuments()"><div>📄</div><strong>Documents & Forms</strong><span class="tiny">Open common Village forms, fill them, sign them and keep your copy</span></div>
   <div class="quick" onclick="openJourney()"><div>🧭</div><strong>My Journey</strong><span class="tiny">See what you're working on, what comes next and who is helping</span></div>
+  <div class="quick" onclick="openMessageMatt()"><div>✉️</div><strong>Message Matt</strong><span class="tiny">Send an issue directly for Matt to review</span></div>
 </div>
 <div class="help"><strong>Village Secretary Desk</strong><p class="tiny">Ask about Village information, appointments, requests, forms, or where something should go. The public desk is coordinated by the Office Manager and cannot make housing, medical, financial, eligibility, or disciplinary decisions.</p><button class="btn secondary" onclick="openSecretary()">Talk to the Secretary Desk</button></div>
 <div class="card"><h3>My Unit</h3><p>Wi-Fi • Garbage & recycling • Unit information • Emergency contacts</p><span class="badge good">No open urgent issues</span></div>`;
 }
 
 function staff(){
-sidebar.innerHTML='<div class="sideitem active">Dashboard</div><div class="sideitem">Requests</div><div class="sideitem">Maintenance</div><div class="sideitem">Referrals</div><div class="sideitem">Services</div><div class="sideitem" onclick="openDocuments()">Documents & Forms</div><div class="sideitem">Community</div><div class="sideitem">Messages</div>';
+sidebar.innerHTML='<div class="sideitem active">Dashboard</div><div class="sideitem">Requests</div><div class="sideitem">Maintenance</div><div class="sideitem">Referrals</div><div class="sideitem">Services</div><div class="sideitem" onclick="openDocuments()">Documents & Forms</div><div class="sideitem">Community</div><div class="sideitem" onclick="openMessageMatt()">Message Matt</div><div class="sideitem">Messages</div>';
 content.innerHTML=`
 <h3>Staff Dashboard</h3>
 <div class="statgrid"><div class="stat"><b>4</b><span>Open requests</span></div><div class="stat"><b>3</b><span>Maintenance items</span></div><div class="stat"><b>2</b><span>Pending referrals</span></div><div class="stat"><b>1</b><span>Moderation review</span></div></div>
@@ -204,7 +205,7 @@ content.innerHTML=`
 }
 
 function admin(){
-sidebar.innerHTML='<div class="sideitem active">Dashboard</div><div class="sideitem">Residents</div><div class="sideitem">Requests</div><div class="sideitem">Referrals</div><div class="sideitem">Services</div><div class="sideitem" onclick="openDocuments()">Documents & Forms</div><div class="sideitem">Resources</div><div class="sideitem">Community</div><div class="sideitem">Feedback</div><div class="sideitem">Settings</div>';
+sidebar.innerHTML='<div class="sideitem active">Dashboard</div><div class="sideitem">Residents</div><div class="sideitem">Requests</div><div class="sideitem">Referrals</div><div class="sideitem">Services</div><div class="sideitem" onclick="openDocuments()">Documents & Forms</div><div class="sideitem">Resources</div><div class="sideitem">Community</div><div class="sideitem">Feedback</div><div class="sideitem" onclick="openMessageMatt()">Message Matt</div><div class="sideitem">Settings</div>';
 content.innerHTML=`
 <h3>Admin Dashboard</h3>
 <div class="statgrid"><div class="stat"><b>18</b><span>Demo resident accounts</span></div><div class="stat"><b>6</b><span>Active services</span></div><div class="stat"><b>4</b><span>Approved partners</span></div><div class="stat"><b>92%</b><span>Info up to date</span></div></div>
@@ -263,6 +264,16 @@ modalbox.innerHTML='<h3>Documents & Forms</h3><p class="tiny">Common Village doc
 }
 function openLeaseFlow(){
 modalbox.innerHTML='<h3>Residential Tenancy Agreement</h3><div class="notice"><strong>Document ready:</strong> The fillable lease has been prepared for the website document library.</div><p>Live flow: <strong>Open → Fill → Midnight Lens check → Lens Sign → Completed copy + receipt.</strong></p><p class="tiny">The demo does not submit real resident information or execute a real signature yet. Those actions remain behind the pilot privacy, legal, security and authorization gates.</p><div class="actions"><button class="btn secondary" onclick="openDocuments()">Back</button><button class="btn primary" onclick="submitted(\'Document flow preview complete — demo only.\')">Preview flow</button></div>';modal.classList.add('show')
+}
+function openMessageMatt(){
+modalbox.innerHTML='<h3>Direct Message Matt</h3><p class="tiny">Use this when you want an issue, concern or idea to reach Matt directly. The office team may organize delivery and status, but the message itself is preserved for Matt to review.</p><div class="field"><label>Subject</label><input id="mattsubject" placeholder="What is this about?"/></div><div class="field"><label>Your message</label><textarea id="mattmessage" rows="5" placeholder="Tell Matt what happened, what you need, or what you want him to know."></textarea></div><div class="field"><label>How urgent is this?</label><select id="mattpriority"><option>Normal</option><option>Important</option><option>Urgent — needs attention soon</option></select></div><div class="notice"><strong>Direct-message rule:</strong> The AI office team can sort, timestamp and deliver this message, but it cannot edit the substance, close the issue as resolved, or answer as Matt.</div><div class="actions"><button class="btn secondary" onclick="closeModal()">Cancel</button><button class="btn primary" onclick="submitMessageMatt()">Send to Matt</button></div>';modal.classList.add('show')
+}
+function submitMessageMatt(){
+ const subject=(document.getElementById('mattsubject').value||'').trim();
+ const message=(document.getElementById('mattmessage').value||'').trim();
+ const priority=(document.getElementById('mattpriority').value||'Normal');
+ if(!message){document.getElementById('mattmessage').focus();return;}
+ modalbox.innerHTML='<h3>Message queued for Matt</h3><p><strong>'+ (subject||'No subject') +'</strong></p><p class="tiny">Priority: '+priority+'</p><div class="notice">Demo only: no external message has been sent yet. In live operation this creates a preserved message receipt, routes it to Matt&#39;s queue and keeps the sender able to see whether Matt has reviewed it.</div><div class="actions"><button class="btn primary" onclick="closeModal()">Done</button></div>';
 }
 function openOfficeTeam(){
 modalbox.innerHTML='<h3>AI Office Team</h3><p class="tiny">The Office Manager coordinates both secretaries. Each secretary has a separate human principal and work queue. Cross-over work is routed through the manager so nothing is duplicated, lost, or silently reassigned.</p><div class="card" style="margin:12px 0"><strong>Office Manager</strong><p class="tiny">Coordinates priorities, resolves overlap, checks handoffs, monitors stalled work and escalates decisions that require Matt or Tamara.</p><span class="badge good">COORDINATING</span></div><div class="grid2" style="margin-top:12px"><div class="card"><strong>Matt&#39;s Secretary</strong><p class="tiny">Handles Matt&#39;s scheduling, document preparation, follow-ups, information routing and administrative queue. Cannot make Matt&#39;s decisions.</p><span class="badge">MATT QUEUE</span></div><div class="card"><strong>Tamara&#39;s Secretary</strong><p class="tiny">Handles Tamara&#39;s scheduling, document preparation, follow-ups, information routing and administrative queue. Cannot make Tamara&#39;s decisions.</p><span class="badge">TAMARA QUEUE</span></div></div><div class="notice"><strong>Manager rule:</strong> one owner per task, visible handoffs, no duplicate assignments, and anything requiring human authority goes back to the correct person.</div><div class="actions"><button class="btn secondary" onclick="closeModal()">Close</button></div>';modal.classList.add('show')
