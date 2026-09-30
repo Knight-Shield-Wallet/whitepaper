@@ -97,6 +97,9 @@ jobs:
 
           check("KSD signup API", "https://api.ksdlabs.com" in contents["assets/site.js"])
           check("subscription endpoint", "/v1/subscriptions" in contents["assets/site.js"])
+          check("signup reads release manifest", 'fetch("/deployment-manifest.json"' in contents["assets/site.js"])
+          check("signup requires backend verified", 'updates.backend_runtime_verified!==true' in contents["assets/site.js"])
+          check("signup requires live flag", 'updates.live!==true' in contents["assets/site.js"])
           check("privacy in sitemap", "https://ksdlabs.com/privacy/" in contents["sitemap.xml"])
           check("robots sitemap", "Sitemap: https://ksdlabs.com/sitemap.xml" in contents["robots.txt"])
           check("mobile viewport all pages", all('name="viewport"' in contents[p] for p in pages))
@@ -156,6 +159,17 @@ jobs:
           echo "bin=$browser" >> "$GITHUB_OUTPUT"
           "$browser" --version
 
+      - name: Prove signup is fail-closed while backend is unverified
+        shell: bash
+        env:
+          CHROME: ${{ steps.chrome.outputs.bin }}
+        run: |
+          set -euo pipefail
+          "$CHROME" --headless=new --no-sandbox --disable-gpu --virtual-time-budget=1500             --dump-dom http://127.0.0.1:4173/ > /tmp/home-dom.html
+          grep -Fq 'Updates opening soon' /tmp/home-dom.html
+          grep -Fq 'Email signup is being verified. No address is collected yet.' /tmp/home-dom.html
+          grep -Eq '<button[^>]*disabled[^>]*>Updates opening soon</button>' /tmp/home-dom.html
+
       - name: Render phone and desktop evidence
         shell: bash
         env:
@@ -165,16 +179,22 @@ jobs:
           mkdir -p proof/visual
           render () {
             name="$1"; size="$2"; route="$3"
-            "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars               --window-size="$size" --virtual-time-budget=1000               --screenshot="proof/visual/$name.png" "http://127.0.0.1:4173$route"
+            "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars               --window-size="$size" --virtual-time-budget=1500               --screenshot="proof/visual/$name.png" "http://127.0.0.1:4173$route"
             test -s "proof/visual/$name.png"
           }
           render mobile-home 412,915 /
           render mobile-catalogue 412,915 /catalogue/
           render mobile-workspace 412,915 /workspace/
           render mobile-cafe 412,915 /dust-bowl-cafe/
+          render mobile-home-signup 412,915 '/#updates'
+          render mobile-catalogue-signup 412,915 '/catalogue/#updates'
+          render mobile-workspace-signup 412,915 '/workspace/#updates'
+          render mobile-cafe-signup 412,915 '/dust-bowl-cafe/#updates'
+          render mobile-privacy 412,915 /privacy/
           render desktop-home 1440,1000 /
           render desktop-catalogue 1440,1000 /catalogue/
           render desktop-workspace 1440,1000 /workspace/
+          render desktop-home-signup 1440,1000 '/#updates'
           sha256sum proof/visual/*.png | tee proof/visual/SHA256SUMS.txt
 
       - name: Retain QA evidence
