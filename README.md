@@ -37,3 +37,7 @@ Expected public root:
 - deployment-manifest.json
 
 The exact locked KSD/KSDLabs logo asset must be added later as an asset. Until then the site intentionally uses text branding rather than an approximation.
+
+## Current public-site source
+
+Mirrors KSD Labs source release candidate `198d9a78a19717368720cc4db35d49b91f9bd828` from `Knight-Shield-Wallet/ksd-pentagon-runtime`, including the KSD Workspace integration. Publication remains unverified until the GitHub Pages workflow and domain HTTPS checks pass.
