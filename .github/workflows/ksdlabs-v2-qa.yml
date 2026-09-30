@@ -95,9 +95,9 @@ jobs:
               check(f"required consent in {p}", bool(re.search(r'name="consent"[^>]*required', contents[p])))
               check(f"privacy link in {p}", 'href="/privacy/"' in contents[p])
 
-          check("KSD signup API", "https://api.ksdlabs.com" in contents["assets/site.js"])
-          check("subscription endpoint", "/v1/subscriptions" in contents["assets/site.js"])
           check("signup reads release manifest", 'fetch("/deployment-manifest.json"' in contents["assets/site.js"])
+          check("signup enforces KSD API hostname", 'parsed.hostname!=="api.ksdlabs.com"' in contents["assets/site.js"])
+          check("signup enforces subscription path", 'parsed.pathname!=="/v1/subscriptions"' in contents["assets/site.js"])
           check("signup requires backend verified", 'updates.backend_runtime_verified!==true' in contents["assets/site.js"])
           check("signup requires live flag", 'updates.live!==true' in contents["assets/site.js"])
           check("privacy in sitemap", "https://ksdlabs.com/privacy/" in contents["sitemap.xml"])
@@ -108,6 +108,7 @@ jobs:
 
           manifest = json.loads(contents["deployment-manifest.json"])
           updates = manifest.get("customer_updates", {})
+          check("signup endpoint is KSD controlled", updates.get("public_signup_api") == "https://api.ksdlabs.com/v1/subscriptions")
           check("signup backend fail-closed", updates.get("backend_runtime_verified") is False)
           check("signup not live", updates.get("live") is False)
           check("provider neutral delivery", updates.get("provider_neutral_delivery") is True)
