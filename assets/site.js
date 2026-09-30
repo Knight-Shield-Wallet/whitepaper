@@ -20,8 +20,20 @@ if(toggle&&links){
 }
 document.querySelectorAll("[data-year]").forEach(el=>el.textContent=new Date().getFullYear());
 
-const KSD_SIGNUP_API=(document.documentElement.dataset.ksdSignupApi||"https://api.ksdlabs.com").replace(/\/$/,"");
-document.querySelectorAll("[data-ksd-signup]").forEach(form=>{
+const signupForms=[...document.querySelectorAll("[data-ksd-signup]")];
+const setSignupAvailability=(form,enabled,message)=>{
+  const button=form.querySelector('button[type="submit"]');
+  form.querySelectorAll("input,select,button").forEach(control=>{control.disabled=!enabled;});
+  form.setAttribute("aria-disabled",String(!enabled));
+  if(button) button.textContent=enabled?"Sign me up":"Updates opening soon";
+  const status=form.querySelector("[data-signup-status]");
+  if(status){
+    status.textContent=message||"";
+    status.className="signup-status";
+  }
+};
+
+const installSignupHandler=(form,endpoint)=>{
   const status=form.querySelector("[data-signup-status]");
   const button=form.querySelector('button[type="submit"]');
   form.addEventListener("submit",async event=>{
@@ -36,7 +48,7 @@ document.querySelectorAll("[data-ksd-signup]").forEach(form=>{
     status.textContent="Submitting…";
     status.className="signup-status working";
     try{
-      const response=await fetch(KSD_SIGNUP_API+"/v1/subscriptions",{
+      const response=await fetch(endpoint,{
         method:"POST",
         headers:{"content-type":"application/json"},
         body:JSON.stringify({
@@ -64,4 +76,40 @@ document.querySelectorAll("[data-ksd-signup]").forEach(form=>{
       button.disabled=false;
     }
   });
-});
+};
+
+if(signupForms.length){
+  signupForms.forEach(form=>setSignupAvailability(
+    form,
+    false,
+    "Email signup is being verified. No address is collected yet."
+  ));
+
+  fetch("/deployment-manifest.json",{cache:"no-store"})
+    .then(response=>{
+      if(!response.ok)throw new Error("SIGNUP_MANIFEST_UNAVAILABLE");
+      return response.json();
+    })
+    .then(manifest=>{
+      const updates=manifest&&manifest.customer_updates||{};
+      if(updates.live!==true||updates.backend_runtime_verified!==true){
+        throw new Error("SIGNUP_NOT_VERIFIED");
+      }
+      const endpoint=String(updates.public_signup_api||"").trim();
+      const parsed=new URL(endpoint,location.origin);
+      if(parsed.protocol!=="https:"||parsed.hostname!=="api.ksdlabs.com"||parsed.pathname!=="/v1/subscriptions"){
+        throw new Error("SIGNUP_ENDPOINT_NOT_APPROVED");
+      }
+      signupForms.forEach(form=>{
+        setSignupAvailability(form,true,"");
+        installSignupHandler(form,parsed.href);
+      });
+    })
+    .catch(()=>{
+      signupForms.forEach(form=>setSignupAvailability(
+        form,
+        false,
+        "Email signup is being verified. No address is collected yet."
+      ));
+    });
+}
