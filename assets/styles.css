@@ -135,3 +135,23 @@ h2{letter-spacing:-.035em}
 @media(max-width:900px){.hero-grid{grid-template-columns:1fr}.grid,.catalogue-grid{grid-template-columns:1fr 1fr}.split,.proof-grid{grid-template-columns:1fr}.nav-links{display:none;position:absolute;left:16px;right:16px;top:66px;flex-direction:column;align-items:flex-start;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px;box-shadow:0 16px 34px rgba(11,39,66,.14)}.nav-links.open{display:flex}.nav-toggle{display:block}}
 @media(max-width:620px){.wrap{width:min(100% - 24px,var(--max))}.hero{padding:68px 0 52px}.grid,.catalogue-grid,.journal-grid{grid-template-columns:1fr}.section{padding:50px 0}.section-head{align-items:flex-start;flex-direction:column}.card{min-height:0}.footer-inner{flex-direction:column}.catalogue-cta{align-items:flex-start;flex-direction:column}.mini-list>div{grid-template-columns:1fr;gap:4px}.workflow{grid-template-columns:1fr}.workflow-item{min-height:0;border-right:0;border-bottom:1px solid var(--line)}.workflow-item:last-child{border-bottom:0}.workflow-item::after{display:none}.workflow-item b{margin-bottom:10px}.brand small{display:none}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+.signup-section{border-top:1px solid rgba(11,39,66,.10)}
+.signup-shell{display:grid;grid-template-columns:.82fr 1.18fr;gap:38px;align-items:start}
+.signup-shell h2{font-size:clamp(2rem,5vw,3.45rem);margin-top:7px}
+.signup-shell>div>p{color:var(--muted);max-width:620px}
+.signup-form{display:grid;grid-template-columns:1fr 1fr;gap:14px;border:1px solid var(--line);background:rgba(255,255,255,.76);border-radius:18px;padding:22px;box-shadow:0 12px 30px rgba(11,39,66,.05)}
+.signup-label{display:grid;gap:6px;color:var(--navy);font-size:.78rem;font-weight:900}
+.signup-label span{color:var(--muted);font-weight:600}
+.signup-label input,.signup-label select{width:100%;min-height:46px;border:1px solid #9aa8b2;border-radius:10px;background:var(--white);color:var(--graphite);padding:10px 12px;font:inherit}
+.signup-label select{cursor:pointer}
+.signup-consent{grid-column:1/-1;display:flex;gap:9px;align-items:flex-start;color:var(--muted);font-size:.78rem}
+.signup-consent input{margin-top:4px}
+.signup-consent a{text-decoration:underline;text-underline-offset:2px;color:var(--navy)}
+.signup-form .btn{width:max-content}
+.signup-status{grid-column:1/-1;min-height:1.35em;margin:0;font-size:.8rem;color:var(--muted)}
+.signup-status.ok{color:#155f43}.signup-status.error{color:#8b2931}
+.signup-hp{position:absolute!important;left:-9999px!important;width:1px!important;height:1px!important;overflow:hidden!important}
+.signup-form button:disabled{opacity:.6;cursor:wait}
+@media(max-width:900px){.signup-shell{grid-template-columns:1fr}}
+@media(max-width:620px){.signup-form{grid-template-columns:1fr}.signup-consent,.signup-status{grid-column:1}}

@@ -29,7 +29,8 @@
     "/labs/",
     "/about/",
     "/partners/",
-    "/contact/"
+    "/contact/",
+    "/privacy/"
   ],
   "brand": {
     "company": "Knight Shield Digital Inc.",
@@ -61,5 +62,16 @@
     "independent_verifier": "Orbit",
     "privacy_identity_layer": "Midnight Lens",
     "storage_default": "on-device-or-user-cloud"
+  },
+  "customer_updates": {
+    "status": "SOURCE_INTEGRATED_BACKEND_NOT_PROVEN",
+    "public_signup_api": "https://api.ksdlabs.com/v1/subscriptions",
+    "registry_owner": "KSD",
+    "provider_neutral_delivery": true,
+    "explicit_consent_required": true,
+    "confirmation_required": true,
+    "unsubscribe_required": true,
+    "backend_runtime_verified": false,
+    "live": false
   }
 }
