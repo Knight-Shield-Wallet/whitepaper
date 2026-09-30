@@ -1,0 +1,186 @@
+name: KSD Labs V2 Release Candidate QA
+
+on:
+  pull_request:
+    branches:
+      - deploy/ksdlabs-public-v1
+    paths:
+      - '**/*.html'
+      - 'assets/**'
+      - 'deployment-manifest.json'
+      - 'sitemap.xml'
+      - 'robots.txt'
+      - '.github/workflows/ksdlabs-v2-qa.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-and-render-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Bind exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual="$(git rev-parse HEAD)"
+          expected="${{ github.event.pull_request.head.sha || github.sha }}"
+          test "$actual" = "$expected"
+          printf 'source_sha=%s\n' "$actual" | tee /tmp/source.txt
+
+      - name: Static contract checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import json, re, sys
+
+          pages = [
+            "index.html","catalogue/index.html","products/index.html","workspace/index.html",
+            "midnight-lens/index.html","dust-bowl-cafe/index.html","dispatch/index.html",
+            "journal/index.html","labs/index.html","about/index.html","partners/index.html",
+            "contact/index.html","privacy/index.html",
+          ]
+          files = pages + ["assets/site.js","assets/styles.css","deployment-manifest.json","sitemap.xml","robots.txt"]
+          failures = []
+
+          def check(name, condition):
+              if not condition:
+                  failures.append(name)
+
+          route_to_path = {"/": "index.html"}
+          for p in pages:
+              if p != "index.html":
+                  route_to_path["/" + p.removesuffix("index.html")] = p
+
+          contents = {p: Path(p).read_text(encoding="utf-8") for p in files}
+          href_re = re.compile(r'href=["\']([^"\'#]+)(?:#[^"\']*)?["\']')
+
+          for page in pages:
+              for href in href_re.findall(contents[page]):
+                  if href.startswith("/") and not href.startswith("//"):
+                      if href.startswith("/assets/"):
+                          continue
+                      clean = href.split("?",1)[0]
+                      check(f"internal link {page} -> {clean}",
+                            clean in route_to_path or clean in {"/robots.txt","/sitemap.xml"})
+
+          banned = re.compile(r"\b(hostinger|vercel|railway|supabase)\b", re.I)
+          for p in pages + ["assets/site.js","assets/styles.css"]:
+              check(f"no banned dependency in {p}", not banned.search(contents[p]))
+
+          secret_patterns = [
+              re.compile(r"sk-[A-Za-z0-9_-]{20,}"),
+              re.compile(r"AKIA[0-9A-Z]{16}"),
+              re.compile(r"ghp_[A-Za-z0-9]{20,}"),
+              re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"),
+          ]
+          for p in files:
+              check(f"no obvious secret in {p}", not any(rx.search(contents[p]) for rx in secret_patterns))
+
+          signup_pages = [
+              "index.html","catalogue/index.html","dust-bowl-cafe/index.html",
+              "midnight-lens/index.html","partners/index.html","workspace/index.html",
+          ]
+          for p in signup_pages:
+              check(f"signup surface in {p}", "data-ksd-signup" in contents[p])
+              check(f"required consent in {p}", bool(re.search(r'name="consent"[^>]*required', contents[p])))
+              check(f"privacy link in {p}", 'href="/privacy/"' in contents[p])
+
+          check("KSD signup API", "https://api.ksdlabs.com" in contents["assets/site.js"])
+          check("subscription endpoint", "/v1/subscriptions" in contents["assets/site.js"])
+          check("privacy in sitemap", "https://ksdlabs.com/privacy/" in contents["sitemap.xml"])
+          check("robots sitemap", "Sitemap: https://ksdlabs.com/sitemap.xml" in contents["robots.txt"])
+          check("mobile viewport all pages", all('name="viewport"' in contents[p] for p in pages))
+          check("skip link all pages", all("skip-link" in contents[p] for p in pages))
+          check("reduced motion", "prefers-reduced-motion" in contents["assets/styles.css"])
+
+          manifest = json.loads(contents["deployment-manifest.json"])
+          updates = manifest.get("customer_updates", {})
+          check("signup backend fail-closed", updates.get("backend_runtime_verified") is False)
+          check("signup not live", updates.get("live") is False)
+          check("provider neutral delivery", updates.get("provider_neutral_delivery") is True)
+
+          if failures:
+              print(json.dumps({"result":"FAIL","failures":failures}, indent=2))
+              sys.exit(1)
+          print(json.dumps({"result":"PASS","checks":"source-contract"}, indent=2))
+          PY
+
+      - name: Start isolated static preview
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/ksdlabs-http.log 2>&1 &
+          echo $! > /tmp/ksdlabs-http.pid
+          for i in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:4173/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/ksdlabs-http.log
+          exit 1
+
+      - name: Verify every public route over HTTP
+        shell: bash
+        run: |
+          set -euo pipefail
+          routes=(/ /catalogue/ /products/ /workspace/ /midnight-lens/ /dust-bowl-cafe/ /dispatch/ /journal/ /labs/ /about/ /partners/ /contact/ /privacy/)
+          for route in "${routes[@]}"; do
+            code="$(curl --silent --output /tmp/body --write-out '%{http_code}' "http://127.0.0.1:4173$route")"
+            test "$code" = "200"
+            test -s /tmp/body
+            printf 'PASS %s %s\n' "$code" "$route"
+          done
+
+      - name: Locate Chrome
+        id: chrome
+        shell: bash
+        run: |
+          set -euo pipefail
+          browser=""
+          for candidate in google-chrome google-chrome-stable chromium chromium-browser; do
+            if command -v "$candidate" >/dev/null 2>&1; then
+              browser="$(command -v "$candidate")"
+              break
+            fi
+          done
+          test -n "$browser"
+          echo "bin=$browser" >> "$GITHUB_OUTPUT"
+          "$browser" --version
+
+      - name: Render phone and desktop evidence
+        shell: bash
+        env:
+          CHROME: ${{ steps.chrome.outputs.bin }}
+        run: |
+          set -euo pipefail
+          mkdir -p proof/visual
+          render () {
+            name="$1"; size="$2"; route="$3"
+            "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars               --window-size="$size" --virtual-time-budget=1000               --screenshot="proof/visual/$name.png" "http://127.0.0.1:4173$route"
+            test -s "proof/visual/$name.png"
+          }
+          render mobile-home 412,915 /
+          render mobile-catalogue 412,915 /catalogue/
+          render mobile-workspace 412,915 /workspace/
+          render mobile-cafe 412,915 /dust-bowl-cafe/
+          render desktop-home 1440,1000 /
+          render desktop-catalogue 1440,1000 /catalogue/
+          render desktop-workspace 1440,1000 /workspace/
+          sha256sum proof/visual/*.png | tee proof/visual/SHA256SUMS.txt
+
+      - name: Retain QA evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: ksdlabs-v2-render-proof-${{ github.event.pull_request.head.sha || github.sha }}
+          path: proof/visual/
+          if-no-files-found: error
+          retention-days: 30
