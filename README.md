@@ -41,3 +41,5 @@ The exact locked KSD/KSDLabs logo asset must be added later as an asset. Until t
 ## Current public-site source
 
 Mirrors KSD Labs source release candidate `198d9a78a19717368720cc4db35d49b91f9bd828` from `Knight-Shield-Wallet/ksd-pentagon-runtime`, including the KSD Workspace integration. Publication remains unverified until the GitHub Pages workflow and domain HTTPS checks pass.
+
+Deployment retry after repository Pages source was set to GitHub Actions. Source artifact remains KSD Labs Workspace release candidate 198d9a78a19717368720cc4db35d49b91f9bd828.
