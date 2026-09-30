@@ -1,33 +1,65 @@
 {
-  "artifact": "ksdlabs-public-site-v1",
+  "artifact": "ksdlabs-public-site",
   "canonical_domain": "ksdlabs.com",
-  "source_repo_target": "Knight-Shield-Wallet/ksdlabs-site",
+  "source_repo": "Knight-Shield-Wallet/ksd-pentagon-runtime",
+  "source_ref": "gh-pages",
+  "candidate_as_of": "2026-09-29",
   "hosting": {
-    "primary": "cloudflare-pages",
+    "primary": "github-pages",
     "fallbacks": [
-      "firebase-hosting",
-      "github-pages"
+      "cloudflare-pages"
     ],
-    "hostinger_role": "domain-and-dns-only"
+    "hostinger_role": "none"
   },
   "privacy": {
-    "public_source_only": true,
+    "public_artifact_only": true,
     "secrets_allowed": false,
-    "private_runtime_dependency": false
+    "private_runtime_dependency": false,
+    "user_content_storage_default": "on-device-or-user-cloud"
   },
   "pages": [
     "/",
+    "/catalogue/",
     "/products/",
+    "/workspace/",
     "/midnight-lens/",
     "/dust-bowl-cafe/",
     "/dispatch/",
-    "/catalogue/",
+    "/journal/",
+    "/labs/",
     "/about/",
+    "/partners/",
     "/contact/"
   ],
   "brand": {
-    "logo_mode": "text-until-exact-locked-asset-is-added",
-    "approximate_logo_forbidden": true
+    "company": "Knight Shield Digital Inc.",
+    "labs_brand": "KSD Labs",
+    "logo_mode": "typography-until-approved-production-web-asset",
+    "master_badge_mutation_forbidden": true,
+    "palette": {
+      "industrial_navy": "#0B2742",
+      "verification_cyan": "#00A9CE",
+      "steel_silver": "#A9B4BE",
+      "proof_gold": "#C79A32",
+      "warm_off_white": "#F4F1E8",
+      "cool_mist": "#E8EDF0",
+      "graphite": "#26323A"
+    }
   },
-  "status": "STAGING_NOT_DEPLOYED"
+  "release_state": "SOURCE_RELEASE_CANDIDATE",
+  "proof": {
+    "github_pages_enabled": false,
+    "apex_https_verified": false,
+    "www_https_verified": false,
+    "live": false
+  },
+  "workspace": {
+    "status": "IN_DEVELOPMENT",
+    "role": "human-facing-governed-work-environment",
+    "control_plane": false,
+    "execution_authority": "Dispatch",
+    "independent_verifier": "Orbit",
+    "privacy_identity_layer": "Midnight Lens",
+    "storage_default": "on-device-or-user-cloud"
+  }
 }
