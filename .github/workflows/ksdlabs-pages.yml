@@ -25,21 +25,8 @@ jobs:
       - name: Checkout isolated public branch
         uses: actions/checkout@v4
 
-      - name: Require bounded Pages admin token
-        env:
-          KSD_PAGES_ADMIN_TOKEN: ${{ secrets.KSD_PAGES_ADMIN_TOKEN }}
-        run: |
-          set -euo pipefail
-          if [ -z "${KSD_PAGES_ADMIN_TOKEN:-}" ]; then
-            echo "::error::KSD_PAGES_ADMIN_TOKEN is required. Scope it only to Knight-Shield-Wallet/whitepaper with Pages: write and Administration: write."
-            exit 78
-          fi
-
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
-        with:
-          enablement: true
-          token: ${{ secrets.KSD_PAGES_ADMIN_TOKEN }}
 
       - name: Upload static site
         uses: actions/upload-pages-artifact@v3
