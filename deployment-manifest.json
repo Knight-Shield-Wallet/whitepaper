@@ -47,7 +47,7 @@
       "graphite": "#26323A"
     }
   },
-  "release_state": "SOURCE_RELEASE_CANDIDATE",
+  "release_state": "FOUNDER_APPROVED_DEPLOYMENT",
   "proof": {
     "github_pages_enabled": false,
     "apex_https_verified": false,
@@ -73,5 +73,10 @@
     "unsubscribe_required": true,
     "backend_runtime_verified": false,
     "live": false
+  },
+  "release_approval": {
+    "approved_at": "2026-10-07",
+    "approved_scope": "Enable GitHub Pages for ksdlabs.com public-safe site and proceed with DNS cutover from Hostinger parked target.",
+    "customer_signup_remains_disabled_until_backend_runtime_verified": true
   }
 }
