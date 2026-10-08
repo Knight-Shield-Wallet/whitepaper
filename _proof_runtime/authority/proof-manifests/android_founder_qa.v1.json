@@ -1,0 +1,56 @@
+{
+  "schema_version": "ksd.gate-manifest.v1",
+  "release_class": "android_founder_qa",
+  "policy_version": "2026-09-02.android-founder-qa.v1",
+  "allowed_channels": [
+    "founder_qa_handoff"
+  ],
+  "required_gates": [
+    {
+      "gate_id": "candidate_identity",
+      "allowed_evidence_classes": ["MACHINE"],
+      "required_evidence_classes": ["MACHINE"]
+    },
+    {
+      "gate_id": "package_identity",
+      "allowed_evidence_classes": ["MACHINE"],
+      "required_evidence_classes": ["MACHINE"],
+      "depends_on": ["candidate_identity"]
+    },
+    {
+      "gate_id": "security_static",
+      "allowed_evidence_classes": ["MACHINE"],
+      "required_evidence_classes": ["MACHINE"],
+      "depends_on": ["candidate_identity"]
+    },
+    {
+      "gate_id": "privacy_static",
+      "allowed_evidence_classes": ["MACHINE"],
+      "required_evidence_classes": ["MACHINE"],
+      "depends_on": ["candidate_identity"]
+    },
+    {
+      "gate_id": "canonical_launcher_identity",
+      "allowed_evidence_classes": ["MACHINE", "TOOL"],
+      "required_evidence_classes": ["MACHINE", "TOOL"],
+      "depends_on": ["package_identity"]
+    },
+    {
+      "gate_id": "approved_figma_source",
+      "allowed_evidence_classes": ["TOOL"],
+      "required_evidence_classes": ["TOOL"]
+    },
+    {
+      "gate_id": "rendered_mobile_visual",
+      "allowed_evidence_classes": ["MACHINE", "AI_JUDGMENT", "HUMAN"],
+      "required_evidence_classes": ["MACHINE", "AI_JUDGMENT"],
+      "depends_on": ["package_identity", "canonical_launcher_identity", "approved_figma_source"]
+    },
+    {
+      "gate_id": "accessibility_preflight",
+      "allowed_evidence_classes": ["MACHINE"],
+      "required_evidence_classes": ["MACHINE"],
+      "depends_on": ["rendered_mobile_visual"]
+    }
+  ]
+}

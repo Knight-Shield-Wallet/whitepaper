@@ -1,0 +1,34 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.knightshield.midnightlens.qa'
+    compileSdk 36
+
+    defaultConfig {
+        applicationId 'com.knightshield.midnightlens.qa'
+        minSdk 28
+        targetSdk 36
+        versionCode 2
+        versionName '0.1.0-qa2-guided-proof'
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+        }
+        release {
+            minifyEnabled false
+        }
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}

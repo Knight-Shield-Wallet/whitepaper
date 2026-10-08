@@ -1,0 +1,73 @@
+name: Lens Founder QA Negative Boundary External Proof
+
+on:
+  push:
+    branches:
+      - build/midnight-lens-quick-session-v1
+    paths:
+      - '_proof_runtime/**'
+      - '.github/workflows/lens-founder-qa-negative-boundary-external.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  prove-runtime-repo-deny:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Execute mirrored Lens-specific Android founder QA deny proof
+        id: boundary
+        run: |
+          set -euo pipefail
+          rm -rf proof-output
+          node _proof_runtime/dispatch/run-midnight-lens-founder-qa-negative-boundary-v1.mjs proof-output
+          STATUS="$(jq -r '.broker.status' proof-output/midnight-lens-founder-qa-negative-boundary.proof.json)"
+          if [ "$STATUS" = "ALLOW" ]; then
+            echo "allowed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "allowed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Assert deny receipt and zero materialization
+        run: |
+          set -euo pipefail
+          test -f proof-output/midnight-lens-founder-qa-negative-boundary.proof.json
+          if find proof-output -type f -iname '*.apk' | grep -q .; then
+            echo 'ERROR: APK reached proof output'
+            exit 1
+          fi
+          jq -e '
+            .release_class == "midnight_lens_android_founder_qa" and
+            .channel == "midnight_lens_founder_qa_handoff" and
+            .verifier_results.package_identity.result == "FAIL" and
+            ((.verifier_results.package_identity.reason_codes | index("APK_STATIC_INSPECTION_FAILED")) != null) and
+            .gatekeeper.status == "DENY" and
+            .gatekeeper.clearance_issued == false and
+            .broker.status == "DENY" and
+            .broker.materialized == false and
+            .assertions.defective_android_candidate_denied == true and
+            .assertions.clearance_not_issued == true and
+            .assertions.founder_qa_handoff_denied == true and
+            .assertions.apk_not_materialized == true and
+            .assertions.no_apk_in_handoff == true
+          ' proof-output/midnight-lens-founder-qa-negative-boundary.proof.json >/dev/null
+          test "${{ steps.boundary.outputs.allowed }}" = "false"
+
+      - name: Founder QA APK handoff — broker ALLOW only
+        if: steps.boundary.outputs.allowed == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: MIDNIGHT-LENS-FOUNDER-QA-APK
+          path: proof-output/handoff/*.apk
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Retain denial receipt only
+        uses: actions/upload-artifact@v4
+        with:
+          name: lens-founder-qa-negative-boundary-denial
+          path: proof-output/midnight-lens-founder-qa-negative-boundary.proof.json
+          if-no-files-found: error
+          retention-days: 30
