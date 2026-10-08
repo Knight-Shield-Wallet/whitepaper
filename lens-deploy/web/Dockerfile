@@ -19,6 +19,11 @@ RUN rm -f /etc/nginx/conf.d/default.conf && printf '%s\n' \
 '  location = /proof-session.html { try_files $uri =404; }' \
 '  location = /proof-session.css { try_files $uri =404; }' \
 '  location = /proof-session.js { try_files $uri =404; }' \
+'  location = /invite { try_files /invite.html =404; }' \
+'  location = /invite.html { try_files $uri =404; }' \
+'  location = /invite.css { try_files $uri =404; }' \
+'  location = /invite.js { try_files $uri =404; }' \
+'  location = /two-phone-gate.mjs { try_files $uri =404; }' \
 '  location = /demo { try_files /demo.html =404; }' \
 '  location = /demo.html { try_files $uri =404; }' \
 '  location = /demo.js { try_files $uri =404; }' \
