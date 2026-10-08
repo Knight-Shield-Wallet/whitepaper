@@ -1,14 +1,10 @@
 # KSDLabs Public Website V1
 
-Temporary staging copy only.
+Public source for ksdlabs.com, published from the `deploy/ksdlabs-public-v1` branch by
+`.github/workflows/ksdlabs-pages.yml` to GitHub Pages. See [DEPLOYMENT.md](DEPLOYMENT.md)
+for the release path, Pages/domain settings, checks and rollback.
 
-Canonical target architecture:
-
-GitHub public source repo -> KSD Static Deploy -> Cloudflare Pages -> ksdlabs.com
-
-Target public repo: `Knight-Shield-Wallet/ksdlabs-site`.
-
-This staging package contains no secrets and no private runtime dependencies. Do not treat this directory as the permanent canonical source after the public repo is created.
+This package contains no secrets and no private runtime dependencies.
 
 ## Public-repo extraction rule
 
@@ -40,6 +36,4 @@ The exact locked KSD/KSDLabs logo asset must be added later as an asset. Until t
 
 ## Current public-site source
 
-Mirrors KSD Labs source release candidate `198d9a78a19717368720cc4db35d49b91f9bd828` from `Knight-Shield-Wallet/ksd-pentagon-runtime`, including the KSD Workspace integration. Publication remains unverified until the GitHub Pages workflow and domain HTTPS checks pass.
-
-Deployment retry after repository Pages source was set to GitHub Actions. Source artifact remains KSD Labs Workspace release candidate 198d9a78a19717368720cc4db35d49b91f9bd828.
+Mirrors KSD Labs source release candidate `198d9a78a19717368720cc4db35d49b91f9bd828` from `Knight-Shield-Wallet/ksd-pentagon-runtime`, including the KSD Workspace integration. Custom-domain publication is verified only by the release checks in DEPLOYMENT.md.
