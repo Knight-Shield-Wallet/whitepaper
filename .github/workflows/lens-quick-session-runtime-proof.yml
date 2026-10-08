@@ -45,12 +45,14 @@ jobs:
           curl -fsS http://127.0.0.1:18080/ > /tmp/root.html
           curl -fsS http://127.0.0.1:18080/session > /tmp/session.html
           curl -fsS http://127.0.0.1:18080/proof-session > /tmp/proof-session.html
+          curl -fsS http://127.0.0.1:18080/invite > /tmp/invite.html
           curl -fsS http://127.0.0.1:18080/demo > /tmp/demo.html
           curl -fsS http://127.0.0.1:18080/marketplace > /tmp/marketplace.html
           grep -q '"service":"midnight-lens-web"' /tmp/health.json
           grep -q 'Quick Session' /tmp/root.html
           grep -q 'Start Photo Session' /tmp/session.html
           grep -q 'Guided Proof Session' /tmp/proof-session.html
+          grep -q 'Two-Phone Gate' /tmp/invite.html
           grep -q 'Midnight Lens' /tmp/demo.html
           grep -q 'Real Buy' /tmp/marketplace.html
           if grep -R -n 'midnight-lens-ksd\.lovable\.app' lens-deploy/web; then
@@ -72,8 +74,25 @@ jobs:
           grep -q 'not yet wired' lens-deploy/web/session.html
           node --check lens-deploy/web/session.js
           node --check lens-deploy/web/proof-session.js
+          node --check lens-deploy/web/invite.js
+          node --check lens-deploy/web/two-phone-gate.mjs
           grep -q 'guided_quick_session_real_user_journey' lens-deploy/web/proof-session.js
           grep -q 'secure_cache_deletion_proven: false' lens-deploy/web/proof-session.js
+
+      - name: Verify two-phone source gate model
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          const { runTwoPhoneGateSelfTest } = await import('./lens-deploy/web/two-phone-gate.mjs');
+          const result = await runTwoPhoneGateSelfTest();
+          if (!result.happy_path || !result.expired_denied || !result.revoked_denied || !result.replay_denied) {
+            console.error(result);
+            process.exit(1);
+          }
+          console.log(JSON.stringify(result, null, 2));
+          NODE
+          grep -q 'real_two_phone_run_proven: false' lens-deploy/web/two-phone-gate.mjs
+          grep -q 'independent_runtime_receipt_proven: false' lens-deploy/web/two-phone-gate.mjs
 
       - name: Write retained proof receipt
         run: |
@@ -95,6 +114,8 @@ jobs:
               "demo_route": "PASS",
               "marketplace_route": "PASS",
               "guided_proof_route": "PASS",
+              "two_phone_invite_route": "PASS",
+              "two_phone_source_gate_model": "PASS",
               "guided_proof_js_syntax": "PASS",
               "legacy_lovable_proxy_absent": "PASS",
               "camera_api_present": "PASS",
@@ -104,6 +125,7 @@ jobs:
               "truth_boundary_copy_present": "PASS"
             },
             "proof_scope": "container_and_static_runtime_only",
+            "two_phone_real_device_proof": "PENDING",
             "android_real_device_proof": "PENDING",
             "release_status": "NOT_RELEASED"
           }
