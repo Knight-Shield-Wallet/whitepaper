@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#070b13">
+  <title>Two-Phone Gate — Midnight Lens</title>
+  <link rel="stylesheet" href="/invite.css">
+</head>
+<body>
+  <main class="invite-shell">
+    <header class="topbar">
+      <a class="brand" href="/">Midnight Lens</a>
+      <span class="badge">Two-Phone Gate</span>
+    </header>
+
+    <section id="ownerView" class="card">
+      <p class="eyebrow">Owner phone</p>
+      <h1>Create a bounded QR invite.</h1>
+      <p class="lede">This prepares the first two-phone proof gate: owner consent, guest consent, opaque expiring invite, one bounded synthetic action, and replay/expiry/revoke denial checks.</p>
+      <label for="ownerLabel">Owner label</label>
+      <input id="ownerLabel" value="Owner phone" maxlength="80">
+      <label for="actionText">Bounded action</label>
+      <input id="actionText" value="Confirm one temporary photo-session handoff" maxlength="140">
+      <button id="createInvite" class="primary" type="button">Create Invite</button>
+      <div id="inviteOutput" class="output hidden">
+        <p class="fine">Open this link on the guest phone. A QR image can be generated from the same link by the device/share tool used for the live run.</p>
+        <a id="inviteLink" class="linkbox" href="#"></a>
+        <button id="copyInvite" class="secondary-btn" type="button">Copy Link</button>
+        <button id="revokeInvite" class="danger" type="button">Mark Revoked For Proof</button>
+      </div>
+      <div class="notice"><strong>Truth boundary</strong><p>This source harness does not prove physical two-phone use, live media transport, identity verification, signing, or independent runtime execution. Those remain the target-device proof gate.</p></div>
+    </section>
+
+    <section id="guestView" class="card hidden">
+      <p class="eyebrow">Guest phone</p>
+      <h1>Review and consent.</h1>
+      <div id="inviteSummary" class="results"></div>
+      <label for="guestLabel">Guest label</label>
+      <input id="guestLabel" value="Guest phone" maxlength="80">
+      <button id="acceptInvite" class="primary" type="button">Consent And Complete Bounded Action</button>
+      <a class="secondary" href="/">Cancel</a>
+    </section>
+
+    <section id="receiptView" class="card hidden">
+      <p class="eyebrow">Retained receipt</p>
+      <h1 id="verdict">—</h1>
+      <div id="receiptSummary" class="results"></div>
+      <pre id="receiptJson"></pre>
+      <button id="copyReceipt" class="primary" type="button">Copy Receipt JSON</button>
+      <a class="secondary" href="/invite">New Invite</a>
+    </section>
+  </main>
+  <script type="module" src="/invite.js"></script>
+</body>
+</html>
