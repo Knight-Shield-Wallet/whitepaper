@@ -32,18 +32,18 @@
       <h2>Follow Lens without handing over more than needed.</h2>
       <p>Join the Midnight Lens interest list for launch and availability updates.</p>
     </div>
-    <form class="signup-form" data-ksd-signup data-interest="midnight-lens" data-source-surface="midnight-lens">
+    <form class="signup-form" data-ksd-signup aria-disabled="true" data-interest="midnight-lens" data-source-surface="midnight-lens">
       <label class="signup-label">Email address
-        <input name="email" type="email" autocomplete="email" inputmode="email" required placeholder="you@example.com">
+        <input name="email" type="email" autocomplete="email" inputmode="email" required placeholder="you@example.com" disabled>
       </label>
       <label class="signup-label">First name <span>optional</span>
-        <input name="first_name" type="text" autocomplete="given-name" maxlength="80">
+        <input name="first_name" type="text" autocomplete="given-name" maxlength="80" disabled>
       </label>
       
-      <label class="signup-consent"><input name="consent" type="checkbox" required> <span>I agree to receive KSD Labs email updates from Knight Shield Digital Inc. about this interest. I can unsubscribe at any time. <a href="/privacy/">Privacy details</a>.</span></label>
-      <label class="signup-hp" aria-hidden="true">Company website<input name="company_website" type="text" autocomplete="off" tabindex="-1"></label>
-      <button class="btn" type="submit">Sign me up</button>
-      <p class="signup-status" data-signup-status aria-live="polite"></p>
+      <label class="signup-consent"><input name="consent" type="checkbox" required disabled> <span>I agree to receive KSD Labs email updates from Knight Shield Digital Inc. about this interest. I can unsubscribe at any time. <a href="/privacy/">Privacy details</a>.</span></label>
+      <label class="signup-hp" aria-hidden="true">Company website<input name="company_website" type="text" autocomplete="off" tabindex="-1" disabled></label>
+      <button class="btn" type="submit" disabled>Updates opening soon</button>
+      <p class="signup-status" data-signup-status aria-live="polite">Email signup is being verified. No address is collected yet.</p>
     </form>
   </div>
 </section>
