@@ -17,6 +17,7 @@ concurrency:
 
 jobs:
   deploy:
+    if: github.ref == 'refs/heads/deploy/ksdlabs-public-v1'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -24,6 +25,12 @@ jobs:
     steps:
       - name: Checkout isolated public branch
         uses: actions/checkout@v4
+
+      - name: Check public site and custom domain
+        shell: bash
+        run: |
+          test -f index.html
+          test "$(cat CNAME)" = "ksdlabs.com"
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
