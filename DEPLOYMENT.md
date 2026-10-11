@@ -100,12 +100,18 @@ Before calling a candidate released:
 
 ## Rollback
 
-- Source: revert the offending commit on the release branch through a PR; the publish
-  workflow redeploys it as a new run. Do not rewrite history or force-push.
-- Pages domain: `gh api --method PUT repos/Knight-Shield-Wallet/whitepaper/pages -F cname=null`
-  returns to project-URL publication. Leave `https_enforced` on.
-- DNS: restore only the captured A/CNAME RRsets with their original TTLs from the zone
-  export.
+The project URL is not a fallback: root-relative assets and links 404 there (see Domain
+routing), so removing the custom domain never restores a working site.
+
+- Source (primary): revert the offending commit on the release branch through a PR; the
+  publish workflow redeploys it as a new run while the domain stays bound. Do not rewrite
+  history or force-push.
+- Routing: restore only the captured A/CNAME RRsets with their original TTLs from the zone
+  export. This returns the domain to its pre-cutover state (parked at the October 2026
+  inspection), not to a working site.
+- Pages domain, cleanup only after the DNS restore:
+  `gh api --method PUT repos/Knight-Shield-Wallet/whitepaper/pages -F cname=null`.
+  Leave `https_enforced` on.
 
 ## Troubleshooting
 
