@@ -1,0 +1,36 @@
+{
+  "schema": "ksd.midnight-lens.backpack.proof-status.v1",
+  "as_of": "2026-10-11",
+  "source_repository": "Knight-Shield-Wallet/whitepaper",
+  "source_branch": "build/midnight-lens-quick-session-v1",
+  "source_sha": "7ec51eeda0b21273fe5fce4782cc5feeccff4410",
+  "github_actions": {
+    "lens_quick_session_runtime_proof": {
+      "run_number": 65,
+      "conclusion": "success"
+    },
+    "lens_marketplace_verify": {
+      "run_number": 55,
+      "conclusion": "success"
+    }
+  },
+  "local_checks": {
+    "javascript_syntax": "PASS",
+    "two_phone_source_gate_self_test": "PASS",
+    "self_test_receipt_hash": "f05f6bc91ea929c97277320f79aa70b361558bc329ed90ed8e59b2378232621d"
+  },
+  "first_missing_gate": {
+    "name": "real_two_phone_device_proof",
+    "status": "PENDING",
+    "required_evidence": [
+      "owner phone creates opaque expiring invite",
+      "guest phone accepts with consent",
+      "bounded synthetic action completes",
+      "revoke denial captured",
+      "expiry denial captured",
+      "replay denial captured",
+      "independent retained receipt captured"
+    ]
+  },
+  "release_status": "PAUSED_UNTIL_WEBSITE_GATE_PASSES"
+}
