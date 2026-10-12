@@ -1,0 +1,15 @@
+{
+  "schema_version": "ksd.gate-manifest.v1",
+  "release_class": "proof_boundary_canary",
+  "policy_version": "2026-09-02.proof-canary.v1",
+  "allowed_channels": [
+    "proof_canary_handoff"
+  ],
+  "required_gates": [
+    {
+      "gate_id": "canary_integrity",
+      "allowed_evidence_classes": ["MACHINE"],
+      "required_evidence_classes": ["MACHINE"]
+    }
+  ]
+}

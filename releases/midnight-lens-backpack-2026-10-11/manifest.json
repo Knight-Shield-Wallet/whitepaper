@@ -1,0 +1,38 @@
+{
+  "schema": "ksd.midnight-lens.backpack.manifest.v1",
+  "package_name": "midnight-lens-backpack",
+  "package_date": "2026-10-11",
+  "product": "Midnight Lens",
+  "scope": "Quick Session and two-phone source gate handoff",
+  "source_repository": "Knight-Shield-Wallet/whitepaper",
+  "source_branch": "build/midnight-lens-quick-session-v1",
+  "source_sha": "7ec51eeda0b21273fe5fce4782cc5feeccff4410",
+  "local_checkout_sha": "8f58f6f83d876f4aab4835557aba48cfa76ee795",
+  "current_pack_location": "dist/midnight-lens-backpack-2026-10-11",
+  "included_paths": [
+    "source/web",
+    "source/extension",
+    "source/founder-auth",
+    "source/docker-compose.yml",
+    "proof/proof-status.json",
+    "docs/operator-handoff.md"
+  ],
+  "proof_status": {
+    "github_quick_session_runtime_proof": "PASS",
+    "github_marketplace_verify": "PASS",
+    "local_source_gate_self_test": "PASS",
+    "real_two_phone_device_proof": "PENDING",
+    "website_gate": "PENDING",
+    "release_status": "PAUSED"
+  },
+  "truth_boundary": {
+    "live_two_phone_run_proven": false,
+    "live_media_transport_proven": false,
+    "identity_verification_proven": false,
+    "signing_proven": false,
+    "independent_runtime_receipt_proven": false
+  },
+  "do_not_switch_to": [
+    "H4H"
+  ]
+}
