@@ -113,3 +113,51 @@ if(signupForms.length){
       ));
     });
 }
+
+
+// Local illustrative walkthrough: no network, credentials or real execution.
+document.querySelectorAll("[data-cafai-demo]").forEach(demo=>{
+  const task=demo.querySelector("[data-demo-task]");
+  const evidence=demo.querySelector("[data-demo-evidence]");
+  const next=demo.querySelector("[data-demo-next]");
+  const reset=demo.querySelector("[data-demo-reset]");
+  const output=demo.querySelector("[data-demo-output]");
+  let step=0;
+  const render=(heading,body)=>{
+    const h=document.createElement("h3");
+    h.textContent=heading;
+    const p=document.createElement("p");
+    p.textContent=body;
+    output.replaceChildren(h,p);
+  };
+  const restart=()=>{
+    step=0; task.disabled=false; evidence.disabled=false;
+    next.disabled=false; next.textContent="Start demo";
+    render("CafAI brings the work together.","Choose an example, then start. You will see the proposed scope before approving the next step.");
+  };
+  reset.addEventListener("click",restart);
+  next.addEventListener("click",()=>{
+    const website=task.value==="website";
+    if(step===0){
+      task.disabled=true; evidence.disabled=true; step=1;
+      render("Dispatch: review the sample scope",website
+        ?"Proposed example: update one product description in a preview and check the page and its links. No production publication, purchases or DNS changes are allowed. Approving advances this illustration only."
+        :"Proposed example: prepare an application draft using approved information and flag missing fields. No submission, signature, payment or new account is allowed. Approving advances this illustration only.");
+      next.textContent="Approve sample scope";
+    }else if(step===1){
+      step=2;
+      render("CafAI: sample work record",website
+        ?"Fictional worker record: the preview description was edited. The record names the allowed change and links it to the sample scope. Next, inspect what an independent evidence check would conclude."
+        :"Fictional worker record: a draft was prepared and missing fields were marked. Nothing was submitted. Next, inspect what an independent evidence check would conclude.");
+      next.textContent="Review sample evidence";
+    }else if(step===2){
+      step=3;
+      const complete=evidence.value==="complete";
+      render(complete?"Orbit: illustrative checks pass":"Orbit: illustrative result remains unverified",
+        complete
+        ?(website?"Sample evidence says the preview text matches and its links work. In a real workflow these observations would need retained evidence and independent verification. This demonstration proves neither.":"Sample evidence says the draft is saved, required fields are identified and no submission occurred. In a real workflow these observations would need retained evidence and independent verification. This demonstration proves neither.")
+        :(website?"The sample record contains an edit claim but no page or link check. The illustrated outcome stays unverified. Next action: obtain the missing runtime evidence.":"The sample record claims a draft exists but contains no saved draft to inspect. The illustrated outcome stays unverified. Next action: obtain the draft evidence."));
+      next.disabled=true; next.textContent="Walkthrough finished";
+    }
+  });
+});
