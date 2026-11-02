@@ -187,8 +187,11 @@ jobs:
           }
           render mobile-home 412,915 /
           render mobile-catalogue 412,915 /catalogue/
+          render mobile-products 412,915 '/products/#products'
           render mobile-workspace 412,915 /workspace/
           render mobile-cafe 412,915 /dust-bowl-cafe/
+          render mobile-cafe-demo 412,915 '/dust-bowl-cafe/#demo'
+          render mobile-community 412,915 /the-rest-of-us/
           render mobile-home-signup 412,915 '/#updates'
           render mobile-catalogue-signup 412,915 '/catalogue/#updates'
           render mobile-workspace-signup 412,915 '/workspace/#updates'
@@ -196,6 +199,9 @@ jobs:
           render mobile-privacy 412,915 /privacy/
           render desktop-home 1440,1000 /
           render desktop-catalogue 1440,1000 /catalogue/
+          render desktop-products 1440,1000 '/products/#products'
+          render desktop-cafe-demo 1440,1000 '/dust-bowl-cafe/#demo'
+          render desktop-community 1440,1000 /the-rest-of-us/
           render desktop-workspace 1440,1000 /workspace/
           render desktop-home-signup 1440,1000 '/#updates'
           sha256sum proof/visual/*.png | tee proof/visual/SHA256SUMS.txt
