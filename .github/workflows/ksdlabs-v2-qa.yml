@@ -47,7 +47,7 @@ jobs:
             "index.html","catalogue/index.html","products/index.html","workspace/index.html",
             "midnight-lens/index.html","dust-bowl-cafe/index.html","dispatch/index.html",
             "journal/index.html","labs/index.html","about/index.html","partners/index.html",
-            "contact/index.html","privacy/index.html",
+            "contact/index.html","privacy/index.html","the-rest-of-us/index.html",
           ]
           files = pages + ["assets/site.js","assets/styles.css","deployment-manifest.json","sitemap.xml","robots.txt"]
           failures = []
@@ -101,6 +101,8 @@ jobs:
           check("signup requires backend verified", 'updates.backend_runtime_verified!==true' in contents["assets/site.js"])
           check("signup requires live flag", 'updates.live!==true' in contents["assets/site.js"])
           check("privacy in sitemap", "https://ksdlabs.com/privacy/" in contents["sitemap.xml"])
+          check("The Rest of Us in sitemap", "https://ksdlabs.com/the-rest-of-us/" in contents["sitemap.xml"])
+          check("The Rest of Us in route manifest", "/the-rest-of-us/" in json.loads(contents["deployment-manifest.json"]).get("pages", []))
           check("robots sitemap", "Sitemap: https://ksdlabs.com/sitemap.xml" in contents["robots.txt"])
           check("mobile viewport all pages", all('name="viewport"' in contents[p] for p in pages))
           check("skip link all pages", all("skip-link" in contents[p] for p in pages))
@@ -136,7 +138,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          routes=(/ /catalogue/ /products/ /workspace/ /midnight-lens/ /dust-bowl-cafe/ /dispatch/ /journal/ /labs/ /about/ /partners/ /contact/ /privacy/)
+          routes=(/ /catalogue/ /products/ /workspace/ /midnight-lens/ /dust-bowl-cafe/ /dispatch/ /journal/ /labs/ /about/ /partners/ /contact/ /privacy/ /the-rest-of-us/)
           for route in "${routes[@]}"; do
             code="$(curl --silent --output /tmp/body --write-out '%{http_code}' "http://127.0.0.1:4173$route")"
             test "$code" = "200"
