@@ -66,6 +66,7 @@ h2{letter-spacing:-.035em}
 .btn.secondary{background:transparent;color:var(--navy);border-color:#87939d}
 .btn.gold{background:var(--gold);border-color:var(--gold);color:#16202a}
 .section{padding:68px 0}
+.section[id]{scroll-margin-top:88px}
 .section.alt{background:rgba(255,255,255,.48);border-top:1px solid rgba(11,39,66,.08);border-bottom:1px solid rgba(11,39,66,.08)}
 .section-head{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-bottom:28px}
 .section-head h2,.split h2,.catalogue-cta h2{font-size:clamp(2rem,5vw,3.55rem)}
