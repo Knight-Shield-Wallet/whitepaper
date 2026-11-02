@@ -185,22 +185,22 @@ jobs:
             "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --force-prefers-reduced-motion=reduce               --window-size="$size" --virtual-time-budget=1500               --screenshot="proof/visual/$name.png" "http://127.0.0.1:4173$route"
             test -s "proof/visual/$name.png"
           }
-          render mobile-home 412,915 /
+          render mobile-home 412,1600 /
           render mobile-catalogue 412,915 /catalogue/
-          render mobile-products 412,915 '/products/#products'
+          render mobile-products 412,1800 /products/
           render mobile-workspace 412,915 /workspace/
           render mobile-cafe 412,915 /dust-bowl-cafe/
-          render mobile-cafe-demo 412,915 '/dust-bowl-cafe/#demo'
+          render mobile-cafe-demo 412,1600 /dust-bowl-cafe/
           render mobile-community 412,915 /the-rest-of-us/
           render mobile-home-signup 412,915 '/#updates'
           render mobile-catalogue-signup 412,915 '/catalogue/#updates'
           render mobile-workspace-signup 412,915 '/workspace/#updates'
           render mobile-cafe-signup 412,915 '/dust-bowl-cafe/#updates'
           render mobile-privacy 412,915 /privacy/
-          render desktop-home 1440,1000 /
+          render desktop-home 1440,1400 /
           render desktop-catalogue 1440,1000 /catalogue/
-          render desktop-products 1440,1000 '/products/#products'
-          render desktop-cafe-demo 1440,1000 '/dust-bowl-cafe/#demo'
+          render desktop-products 1440,1250 /products/
+          render desktop-cafe-demo 1440,1500 /dust-bowl-cafe/
           render desktop-community 1440,1000 /the-rest-of-us/
           render desktop-workspace 1440,1000 /workspace/
           render desktop-home-signup 1440,1000 '/#updates'
