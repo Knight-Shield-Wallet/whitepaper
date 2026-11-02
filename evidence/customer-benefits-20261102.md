@@ -1,30 +1,32 @@
 # Customer benefits website update — 2026-11-02
 
-Status: SOURCE IMPLEMENTED; LOCAL LOGIC CHECKS PASSED; NOT DEPLOYED.
+**Status:** SOURCE UPDATED · CI ROUTE AND BROWSER RENDER CHECKS PASSED · DRAFT · NOT DEPLOYED
 
-Source implementation commit: 5b8fc38d97b6ed782604c05785952252ea849482.
-Base: deploy/ksdlabs-public-v1.
+**PR:** https://github.com/Knight-Shield-Wallet/whitepaper/pull/13  
+**Reviewed source head:** `adc32dbc25d555a52fedf2b5dfadbce33c96fdbd`  
+**QA run:** 41540144318 — KSD Labs V2 Release Candidate QA — success  
+**Render artifact:** `ksdlabs-v2-render-proof-adc32dbc25d555a52fedf2b5dfadbce33c96fdbd` (artifact 13185164874)
 
-Executed:
-- Inspected homepage, products, catalogue, contact, journal, privacy, CafAI legacy route and shared JavaScript through GitHub.
-- Fetched the public ksdlabs.com homepage. It served the older catalogue, not the supplied Habitat screenshot.
-- Updated homepage benefits; product and catalogue copy; CafAI display name (legacy URL and subscription identifiers retained for compatibility).
-- Added native details disclosures with "Peel back for more info".
-- Added an illustrative CafAI/Dispatch/Orbit walkthrough to the existing CafAI route and linked it from the homepage.
-- Added an educational "The Rest of Us" article, footer navigation, wallet status disclosure and source-scoped cookie explanation.
+## Changes
 
-Actual local checks:
-- node --check assets/site.js: exit 0.
-- Python HTMLParser parsed all six changed HTML documents: exit 0.
-- Node vm logic harness: website/complete PASS; website/missing PASS; application/complete PASS; application/missing PASS. All checked scope, approval, evidence branch and reset. Any network request would throw; none occurred.
-- These checks were run on the generated content before the footer-only additions. Footer additions do not alter walkthrough logic.
-- No browser, mobile or accessibility runtime verification. No independent Orbit verification. Qualification 0/5.
-- This is not a real CafAI backend integration. Demo evidence is explicitly fictional and no work is submitted.
+- Added `/the-rest-of-us/` to the QA source-page contract and HTTP route smoke test. Added sitemap and deployment-manifest assertions for the route. Preserved the page and existing internal links.
+- Added Habitat-style pastel product cards with thick black outlines and rounded corners for Secretary, CafAI, Dispatch, Orbit and Wallet. Midnight Lens retains its original premium styling.
+- Kept native expandable product explanations, with disclosure affordances styled for visibility.
+- Moved the CafAI → Dispatch → Orbit fictional walkthrough directly below the CafAI introduction, added a direct CTA, and styled its task/evidence controls for phone and desktop layouts.
+- Preserved the explicit in-development wallet status, cookie explanation, community article, and disabled signup until its backend is verified.
 
-Remaining:
-- The screenshot's newer Habitat source has not been located; this patch preserves the inspected release-source layout. Native details disclose information; a sticky-note peel animation is not implemented.
-- Contact page has no usable verified public channel. Do not invent an address.
-- No verified wallet launch facts or access URL were found in inspected source. Wallet remains in development; no launch announcement fabricated.
-- Cookie source review finds no cookie/storage or analytics code in inspected shared script. Hosting cookies/headers and all third-party behavior remain unverified.
-- Site-wide audit is incomplete: other routes, full asset inventory, deployment manifest reconciliation and release checks still needed.
-- No DNS, Hostinger, signup activation, merge or deployment performed.
+## Verification
+
+GitHub Actions run 41540144318 passed all steps on the reviewed candidate, including:
+
+- Static source contract checks.
+- HTTP 200 for all 14 public routes, including `/the-rest-of-us/`.
+- Signup remains fail-closed while the backend is unverified.
+- Headless Chrome phone and desktop renders for the homepage, catalogue, products, CafAI walkthrough, community page, workspace and privacy page.
+- SHA-256 manifest for retained screenshots.
+
+The screenshots were visually inspected. They show the colored product cards on desktop and phone layouts, the full catalogue, the CafAI walkthrough controls and the community page. The walkthrough is illustrative: its data is fictional and it calls no providers or execution services. The previous local logic harness recorded four passing cases (website/application tasks, complete/missing evidence); no change was made to that logic in this update.
+
+## Not established
+
+No real CafAI, Dispatch or Orbit operation; independent Orbit verification; five-real-run qualification; wallet launch/access facts; or verified public contact channel is established here. The PR remains a draft. No merge, public deployment, DNS, signup activation or wallet launch announcement occurred. Required release approval remains outstanding before publication.
