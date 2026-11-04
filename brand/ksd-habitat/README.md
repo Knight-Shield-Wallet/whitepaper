@@ -2,12 +2,18 @@
 
 This kit captures the Habitat identity shown in the supplied reference: the Ht. app icon, the Habitat wordmark, and the privacy-first visual language.
 
-## NVD AI Protocol
+## NV²D Protocol
 
-**Copy:** Lead with one direct product description that says what it does for the customer. Keep extra copy only when it adds a concrete use case, status, privacy, or safety fact. Remove repeated claims, abstract slogans, throat-clearing, and filler. The description should carry the pitch.
+**No visual or verbal diarrhea.** The superscript ² means one standard covers both.
 
-**Visuals:** Follow the locked Habitat direction in this kit: warm ivory, oversized black sans-serif type, teal details, rounded Bento cards with black outlines and semantic pastel fills. Each visual should make one product or benefit easy to understand. Remove decorative clutter and repeated labels. Do not introduce a new palette or redraw the Ht icon. Keep Midnight Lens in its approved premium dark identity.
+- Lead with one direct product description that states the customer's job and outcome.
+- Keep supporting copy only when it adds a concrete use case, status, privacy, or safety fact.
+- Remove repeated claims, abstract slogans, throat-clearing, decorative clutter, and repeated labels.
+- Put one clear product or benefit at the center of each visual.
+- Follow the locked Habitat direction: warm ivory, oversized black sans-serif type, teal details, rounded Bento cards with black outlines, and semantic pastel fills.
+- Do not invent a new palette or redraw the Ht icon. Keep Midnight Lens in its approved premium dark identity.
 
+The product description carries the pitch.
 ## Brand promise
 
 **Privacy should be normal.**  
