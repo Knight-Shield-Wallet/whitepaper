@@ -4,7 +4,9 @@ This kit captures the Habitat identity shown in the supplied reference: the Ht. 
 
 ## NVD AI Protocol
 
-Lead with the product description. One direct sentence should say what the product does for the customer. Keep extra copy only when it adds a concrete use case, status, privacy, or safety fact. Remove repeated claims, abstract slogans, throat-clearing, and filler. The description should carry the pitch.
+**Copy:** Lead with one direct product description that says what it does for the customer. Keep extra copy only when it adds a concrete use case, status, privacy, or safety fact. Remove repeated claims, abstract slogans, throat-clearing, and filler. The description should carry the pitch.
+
+**Visuals:** Follow the locked Habitat direction in this kit: warm ivory, oversized black sans-serif type, teal details, rounded Bento cards with black outlines and semantic pastel fills. Each visual should make one product or benefit easy to understand. Remove decorative clutter and repeated labels. Do not introduce a new palette or redraw the Ht icon. Keep Midnight Lens in its approved premium dark identity.
 
 ## Brand promise
 
