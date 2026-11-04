@@ -53,6 +53,7 @@ These controls reduce preventable failures; they do not guarantee model output o
 - One headline: six words or fewer.
 - One product description: one sentence, 30 words or fewer.
 - Supporting copy only for a concrete use, proof, status, privacy, or safety fact.
+- Write every customer-facing surface in customer language. Keep internal terms such as `BLOCKED`, `runtime verified`, `intake service`, and implementation notes out of customer copy. State what the customer can do and what will happen.
 - One call to action, only if it works.
 - One product or benefit per frame.
 - No duplicate labels, filler, invented detail, or unapproved logo redraw.
