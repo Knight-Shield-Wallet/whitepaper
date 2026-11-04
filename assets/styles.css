@@ -387,3 +387,24 @@ details summary{color:var(--habitat-ink)}
 
 .lens-room .step strong{color:#f2f8f9}
 .lens-room .step span{color:#b9cbd1}
+
+
+/* NV²D: contact page — Habitat palette, concise status, no inactive CTA. */
+.contact-hero{overflow:hidden}
+.contact-hero-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(280px,.9fr);gap:clamp(28px,6vw,84px);align-items:center}
+.contact-hero-grid h1{max-width:760px}
+.contact-hero-grid p{max-width:590px}
+.contact-visual{position:relative;min-height:330px;border:2px solid var(--habitat-ink);border-radius:28px;background:var(--habitat-cafai);box-shadow:5px 5px 0 var(--habitat-ink);display:grid;place-items:center;overflow:hidden}
+.contact-color-card{position:absolute;border:2px solid var(--habitat-ink);border-radius:22px;box-shadow:4px 4px 0 var(--habitat-ink)}
+.contact-lavender{width:48%;height:47%;left:9%;top:10%;background:var(--habitat-proof);transform:rotate(-7deg)}
+.contact-yellow{width:43%;height:38%;right:8%;bottom:9%;background:var(--habitat-dispatch);transform:rotate(6deg)}
+.contact-envelope{position:relative;z-index:1;width:min(56%,230px);padding:13px;border:2px solid var(--habitat-ink);border-radius:20px;background:var(--paper);box-shadow:4px 4px 0 var(--habitat-ink);transform:rotate(-2deg)}
+.contact-envelope svg{display:block;width:100%;height:auto}
+.contact-stamp{position:absolute;z-index:2;right:7%;top:13%;padding:9px 13px;border:2px solid var(--habitat-ink);border-radius:999px;background:var(--habitat-orbit);color:var(--habitat-ink);font-size:.72rem;font-weight:950;letter-spacing:.06em;transform:rotate(5deg)}
+.contact-teal-dot{position:absolute;z-index:2;left:15%;bottom:13%;width:20px;height:20px;border:2px solid var(--habitat-ink);border-radius:50%;background:#35CFC0}
+.contact-status{padding-top:8px}
+.contact-box.habitat-card{max-width:900px;padding:clamp(22px,4vw,38px);border-radius:24px}
+.contact-box.habitat-card h2{font-size:clamp(1.7rem,3vw,2.6rem);margin:18px 0 10px}
+.contact-box.habitat-card p{max-width:650px;color:#282828;font-size:1rem}
+@media(max-width:900px){.contact-hero-grid{grid-template-columns:1fr}.contact-visual{min-height:270px;max-width:620px;width:100%}}
+@media(max-width:620px){.contact-hero-grid{gap:28px}.contact-visual{min-height:225px;border-radius:22px}.contact-envelope{width:53%}.contact-status{padding-top:0}}
