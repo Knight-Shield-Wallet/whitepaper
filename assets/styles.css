@@ -369,3 +369,11 @@ details summary{color:var(--habitat-ink)}
   .page-hero h1{font-size:clamp(2.45rem,11vw,4.2rem)}
   .section.alt{background:rgba(220,203,250,.14)}
 }
+
+/* Keep Midnight Lens's premium room independent from Habitat's Bento colors. */
+.lens-room .catalogue-grid>.category:not(.habitat-card){
+  border:1px solid #496676;
+  border-radius:16px;
+  box-shadow:none;
+  background:rgba(255,255,255,.055)
+}
