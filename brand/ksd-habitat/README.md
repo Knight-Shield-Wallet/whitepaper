@@ -4,16 +4,10 @@ This kit captures the Habitat identity shown in the supplied reference: the Ht. 
 
 ## NV²D Protocol
 
-**No visual or verbal diarrhea.** The superscript ² means one standard covers both.
+**No Visual or Verbal Diarrhea.** Copy and visuals use the same concise, company-specific standard. The [NV²D KSD profile](nv2d-protocol.md) defines required inputs, approved defaults, claim limits, output limits, and review gates.
 
-- Lead with one direct product description that states the customer's job and outcome.
-- Keep supporting copy only when it adds a concrete use case, status, privacy, or safety fact.
-- Remove repeated claims, abstract slogans, throat-clearing, decorative clutter, and repeated labels.
-- Put one clear product or benefit at the center of each visual.
-- Follow the locked Habitat direction: warm ivory, oversized black sans-serif type, teal details, rounded Bento cards with black outlines, and semantic pastel fills.
-- Do not invent a new palette or redraw the Ht icon. Keep Midnight Lens in its approved premium dark identity.
+The KSD Labs site follows the locked Habitat direction in this kit. Each product description carries the pitch; supporting content stays only when it adds a concrete use case, verified status, privacy, or safety fact.
 
-The product description carries the pitch.
 ## Brand promise
 
 **Privacy should be normal.**  
