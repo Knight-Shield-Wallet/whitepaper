@@ -384,3 +384,6 @@ details summary{color:var(--habitat-ink)}
 .pill-row+.actions{margin-top:14px}
 .callout[data-cafai-demo]>.actions{margin-top:12px;margin-bottom:16px}
 .callout[data-cafai-demo]>.demo-output{padding-top:16px}
+
+.lens-room .step strong{color:#f2f8f9}
+.lens-room .step span{color:#b9cbd1}
