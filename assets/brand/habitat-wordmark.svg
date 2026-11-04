@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 650 124" role="img" aria-labelledby="title">
+  <title id="title">Habitat</title>
+  <g transform="translate(4 4)">
+    <rect x="4" y="4" width="112" height="112" rx="28" fill="#FBFAF5" stroke="#171717" stroke-width="4"/>
+    <text x="20" y="77" fill="#171717" font-family="Inter, Arial, sans-serif" font-size="47" font-weight="800" letter-spacing="-4">Ht</text>
+    <circle cx="87" cy="82" r="4" fill="#35CFC0"/>
+  </g>
+  <text x="144" y="90" fill="#171717" font-family="Inter, Arial, sans-serif" font-size="82" font-weight="800" letter-spacing="-5">Habitat</text>
+  <circle cx="526" cy="83" r="10" fill="#35CFC0"/>
+</svg>
