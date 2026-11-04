@@ -207,9 +207,11 @@ jobs:
           render mobile-workspace-signup 412,915 '/workspace/#updates'
           render mobile-cafe-signup 412,915 '/dust-bowl-cafe/#updates'
           render mobile-contact 412,1100 /contact/
+          render mobile-midnight-lens 412,1400 /midnight-lens/
           render mobile-privacy 412,915 /privacy/
           render desktop-home 1440,1400 /
           render desktop-contact 1440,1000 /contact/
+          render desktop-midnight-lens 1440,1300 /midnight-lens/
           render desktop-catalogue 1440,1000 /catalogue/
           render desktop-products 1440,1250 /products/
           render desktop-cafe-demo 1440,1500 /dust-bowl-cafe/
