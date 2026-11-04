@@ -117,6 +117,7 @@ jobs:
           check("Habitat wordmark SVG", '<title id="title">Habitat</title>' in contents["assets/brand/habitat-wordmark.svg"] and 'Habitat' in contents["assets/brand/habitat-wordmark.svg"])
           check("Habitat brand kit captures assets", all(name in contents["brand/ksd-habitat/README.md"] for name in ("habitat-app-icon.svg", "habitat-wordmark.svg")))
           check("Midnight Lens premium room retained", ".lens-room{background:linear-gradient(150deg,#0d253a" in contents["assets/styles.css"])
+          check("Midnight Lens step contrast retained", ".lens-room .step strong{color:#f2f8f9}" in contents["assets/styles.css"] and ".lens-room .step span{color:#b9cbd1}" in contents["assets/styles.css"])
 
           manifest = json.loads(contents["deployment-manifest.json"])
           updates = manifest.get("customer_updates", {})
