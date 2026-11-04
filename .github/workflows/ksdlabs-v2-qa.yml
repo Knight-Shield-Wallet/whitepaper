@@ -7,6 +7,7 @@ on:
     paths:
       - '**/*.html'
       - 'assets/**'
+      - 'brand/**'
       - 'deployment-manifest.json'
       - 'sitemap.xml'
       - 'robots.txt'
@@ -47,9 +48,10 @@ jobs:
             "index.html","catalogue/index.html","products/index.html","workspace/index.html",
             "midnight-lens/index.html","dust-bowl-cafe/index.html","dispatch/index.html",
             "journal/index.html","labs/index.html","about/index.html","partners/index.html",
-            "contact/index.html","privacy/index.html",
+            "contact/index.html","privacy/index.html","the-rest-of-us/index.html",
           ]
-          files = pages + ["assets/site.js","assets/styles.css","deployment-manifest.json","sitemap.xml","robots.txt"]
+          brand_files = ["assets/brand/habitat-app-icon.svg","assets/brand/habitat-wordmark.svg","brand/ksd-habitat/README.md","brand/ksd-habitat/nv2d-protocol.md"]
+          files = pages + ["assets/site.js","assets/styles.css","deployment-manifest.json","sitemap.xml","robots.txt"] + brand_files
           failures = []
 
           def check(name, condition):
@@ -100,11 +102,27 @@ jobs:
           check("signup enforces subscription path", 'parsed.pathname!=="/v1/subscriptions"' in contents["assets/site.js"])
           check("signup requires backend verified", 'updates.backend_runtime_verified!==true' in contents["assets/site.js"])
           check("signup requires live flag", 'updates.live!==true' in contents["assets/site.js"])
+          contact = contents["contact/index.html"].lower()
+          check("contact status is customer facing", "contact ksd" in contact and "email our team" in contact and "email ksd" in contact and "mcorbett@ksdlabs.com" in contact)
+          check("contact mailto opens the selected KSD mailbox", 'href="mailto:mcorbett@ksdlabs.com?subject=ksd%20website%20inquiry"' in contact and 'href="mailto:mcorbett@ksdlabs.com"' in contact)
+          check("contact hides internal status terms", not any(term in contact for term in ("inbox verified", "intake service", "runtime verified")))
+          check("contact has no unverified form backend", not any(token in contact for token in ("<form", "<input", "fetch(", "action=")))
           check("privacy in sitemap", "https://ksdlabs.com/privacy/" in contents["sitemap.xml"])
+          check("The Rest of Us in sitemap", "https://ksdlabs.com/the-rest-of-us/" in contents["sitemap.xml"])
+          check("The Rest of Us in route manifest", "/the-rest-of-us/" in json.loads(contents["deployment-manifest.json"]).get("pages", []))
           check("robots sitemap", "Sitemap: https://ksdlabs.com/sitemap.xml" in contents["robots.txt"])
           check("mobile viewport all pages", all('name="viewport"' in contents[p] for p in pages))
           check("skip link all pages", all("skip-link" in contents[p] for p in pages))
           check("reduced motion", "prefers-reduced-motion" in contents["assets/styles.css"])
+          check("Habitat ink and ivory tokens", "--habitat-ink:#171717" in contents["assets/styles.css"] and "--paper:#FBFAF5" in contents["assets/styles.css"])
+          check("Habitat app icon SVG", '<title id="title">Habitat app icon</title>' in contents["assets/brand/habitat-app-icon.svg"] and 'fill="#35CFC0"' in contents["assets/brand/habitat-app-icon.svg"])
+          check("Habitat wordmark SVG", '<title id="title">Habitat</title>' in contents["assets/brand/habitat-wordmark.svg"] and 'Habitat' in contents["assets/brand/habitat-wordmark.svg"])
+          check("Habitat brand kit captures assets", all(name in contents["brand/ksd-habitat/README.md"] for name in ("habitat-app-icon.svg", "habitat-wordmark.svg")))
+          protocol = contents["brand/ksd-habitat/nv2d-protocol.md"]
+          check("NV2D brand protocol defines company inputs", all(term in protocol for term in ("Audience and job", "Product truth", "Claim evidence", "Locked brand", "Rights and privacy", "Disclosure rules", "Owner")))
+          check("NV2D protocol has image and video controls", all(term in protocol for term in ("Brand drift", "Video subjects", "Release gate", "BLOCKED")))
+          check("Midnight Lens premium room retained", ".lens-room{background:linear-gradient(150deg,#0d253a" in contents["assets/styles.css"])
+          check("Midnight Lens step contrast retained", ".lens-room .step strong{color:#f2f8f9}" in contents["assets/styles.css"] and ".lens-room .step span{color:#b9cbd1}" in contents["assets/styles.css"])
 
           manifest = json.loads(contents["deployment-manifest.json"])
           updates = manifest.get("customer_updates", {})
@@ -136,7 +154,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          routes=(/ /catalogue/ /products/ /workspace/ /midnight-lens/ /dust-bowl-cafe/ /dispatch/ /journal/ /labs/ /about/ /partners/ /contact/ /privacy/)
+          routes=(/ /catalogue/ /products/ /workspace/ /midnight-lens/ /dust-bowl-cafe/ /dispatch/ /journal/ /labs/ /about/ /partners/ /contact/ /privacy/ /the-rest-of-us/)
           for route in "${routes[@]}"; do
             code="$(curl --silent --output /tmp/body --write-out '%{http_code}' "http://127.0.0.1:4173$route")"
             test "$code" = "200"
@@ -180,20 +198,30 @@ jobs:
           mkdir -p proof/visual
           render () {
             name="$1"; size="$2"; route="$3"
-            "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars               --window-size="$size" --virtual-time-budget=1500               --screenshot="proof/visual/$name.png" "http://127.0.0.1:4173$route"
+            "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --force-prefers-reduced-motion=reduce               --window-size="$size" --virtual-time-budget=1500               --screenshot="proof/visual/$name.png" "http://127.0.0.1:4173$route"
             test -s "proof/visual/$name.png"
           }
-          render mobile-home 412,915 /
+          render mobile-home 412,1600 /
           render mobile-catalogue 412,915 /catalogue/
+          render mobile-products 412,1800 /products/
           render mobile-workspace 412,915 /workspace/
           render mobile-cafe 412,915 /dust-bowl-cafe/
+          render mobile-cafe-demo 412,1600 /dust-bowl-cafe/
+          render mobile-community 412,915 /the-rest-of-us/
           render mobile-home-signup 412,915 '/#updates'
           render mobile-catalogue-signup 412,915 '/catalogue/#updates'
           render mobile-workspace-signup 412,915 '/workspace/#updates'
           render mobile-cafe-signup 412,915 '/dust-bowl-cafe/#updates'
+          render mobile-contact 412,1100 /contact/
+          render mobile-midnight-lens 412,1400 /midnight-lens/
           render mobile-privacy 412,915 /privacy/
-          render desktop-home 1440,1000 /
+          render desktop-home 1440,1400 /
+          render desktop-contact 1440,1000 /contact/
+          render desktop-midnight-lens 1440,1300 /midnight-lens/
           render desktop-catalogue 1440,1000 /catalogue/
+          render desktop-products 1440,1250 /products/
+          render desktop-cafe-demo 1440,1500 /dust-bowl-cafe/
+          render desktop-community 1440,1000 /the-rest-of-us/
           render desktop-workspace 1440,1000 /workspace/
           render desktop-home-signup 1440,1000 '/#updates'
           sha256sum proof/visual/*.png | tee proof/visual/SHA256SUMS.txt
