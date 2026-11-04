@@ -104,7 +104,7 @@ jobs:
           check("signup requires live flag", 'updates.live!==true' in contents["assets/site.js"])
           contact = contents["contact/index.html"].lower()
           check("contact status is customer facing", "contact ksd" in contact and "email our team" in contact and "email ksd" in contact and "mcorbett@ksdlabs.com" in contact)
-          check("contact mailto opens the selected KSD mailbox", 'href="mailto:mcorbett@ksdlabs.com?subject=KSD%20website%20inquiry"' in contact and 'href="mailto:mcorbett@ksdlabs.com"' in contact)
+          check("contact mailto opens the selected KSD mailbox", 'href="mailto:mcorbett@ksdlabs.com?subject=ksd%20website%20inquiry"' in contact and 'href="mailto:mcorbett@ksdlabs.com"' in contact)
           check("contact hides internal status terms", not any(term in contact for term in ("inbox verified", "intake service", "runtime verified")))
           check("contact has no unverified form backend", not any(token in contact for token in ("<form", "<input", "fetch(", "action=")))
           check("privacy in sitemap", "https://ksdlabs.com/privacy/" in contents["sitemap.xml"])
