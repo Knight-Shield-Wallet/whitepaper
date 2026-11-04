@@ -7,6 +7,7 @@ on:
     paths:
       - '**/*.html'
       - 'assets/**'
+      - 'brand/**'
       - 'deployment-manifest.json'
       - 'sitemap.xml'
       - 'robots.txt'
@@ -49,7 +50,8 @@ jobs:
             "journal/index.html","labs/index.html","about/index.html","partners/index.html",
             "contact/index.html","privacy/index.html","the-rest-of-us/index.html",
           ]
-          files = pages + ["assets/site.js","assets/styles.css","deployment-manifest.json","sitemap.xml","robots.txt"]
+          brand_files = ["assets/brand/habitat-app-icon.svg","assets/brand/habitat-wordmark.svg","brand/ksd-habitat/README.md"]
+          files = pages + ["assets/site.js","assets/styles.css","deployment-manifest.json","sitemap.xml","robots.txt"] + brand_files
           failures = []
 
           def check(name, condition):
@@ -110,6 +112,11 @@ jobs:
           check("mobile viewport all pages", all('name="viewport"' in contents[p] for p in pages))
           check("skip link all pages", all("skip-link" in contents[p] for p in pages))
           check("reduced motion", "prefers-reduced-motion" in contents["assets/styles.css"])
+          check("Habitat ink and ivory tokens", "--habitat-ink:#171717" in contents["assets/styles.css"] and "--paper:#FBFAF5" in contents["assets/styles.css"])
+          check("Habitat app icon SVG", '<title id="title">Habitat app icon</title>' in contents["assets/brand/habitat-app-icon.svg"] and 'fill="#35CFC0"' in contents["assets/brand/habitat-app-icon.svg"])
+          check("Habitat wordmark SVG", '<title id="title">Habitat</title>' in contents["assets/brand/habitat-wordmark.svg"] and 'Habitat' in contents["assets/brand/habitat-wordmark.svg"])
+          check("Habitat brand kit captures assets", all(name in contents["brand/ksd-habitat/README.md"] for name in ("habitat-app-icon.svg", "habitat-wordmark.svg")))
+          check("Midnight Lens premium room retained", ".lens-room{background:linear-gradient(150deg,#0d253a" in contents["assets/styles.css"])
 
           manifest = json.loads(contents["deployment-manifest.json"])
           updates = manifest.get("customer_updates", {})
