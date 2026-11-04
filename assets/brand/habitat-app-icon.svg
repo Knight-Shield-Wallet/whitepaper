@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title">
+  <title id="title">Habitat app icon</title>
+  <rect x="8" y="8" width="240" height="240" rx="56" fill="#FBFAF5" stroke="#171717" stroke-width="7"/>
+  <text x="40" y="164" fill="#171717" font-family="Inter, Arial, sans-serif" font-size="100" font-weight="800" letter-spacing="-8">Ht</text>
+  <circle cx="181" cy="171" r="8" fill="#35CFC0"/>
+</svg>
