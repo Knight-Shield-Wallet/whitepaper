@@ -100,6 +100,9 @@ jobs:
           check("signup enforces subscription path", 'parsed.pathname!=="/v1/subscriptions"' in contents["assets/site.js"])
           check("signup requires backend verified", 'updates.backend_runtime_verified!==true' in contents["assets/site.js"])
           check("signup requires live flag", 'updates.live!==true' in contents["assets/site.js"])
+          contact = contents["contact/index.html"].lower()
+          check("contact discloses no verified public inbox", "no verified ksd-owned public contact inbox" in contact)
+          check("contact has no unverified submission path", not any(token in contact for token in ("<form", "<input", "mailto:", "fetch(", "action=")))
           check("privacy in sitemap", "https://ksdlabs.com/privacy/" in contents["sitemap.xml"])
           check("The Rest of Us in sitemap", "https://ksdlabs.com/the-rest-of-us/" in contents["sitemap.xml"])
           check("The Rest of Us in route manifest", "/the-rest-of-us/" in json.loads(contents["deployment-manifest.json"]).get("pages", []))
@@ -196,8 +199,10 @@ jobs:
           render mobile-catalogue-signup 412,915 '/catalogue/#updates'
           render mobile-workspace-signup 412,915 '/workspace/#updates'
           render mobile-cafe-signup 412,915 '/dust-bowl-cafe/#updates'
+          render mobile-contact 412,1100 /contact/
           render mobile-privacy 412,915 /privacy/
           render desktop-home 1440,1400 /
+          render desktop-contact 1440,1000 /contact/
           render desktop-catalogue 1440,1000 /catalogue/
           render desktop-products 1440,1250 /products/
           render desktop-cafe-demo 1440,1500 /dust-bowl-cafe/
