@@ -2,6 +2,10 @@
 
 This kit captures the Habitat identity shown in the supplied reference: the Ht. app icon, the Habitat wordmark, and the privacy-first visual language.
 
+## NVD AI Protocol
+
+Lead with the product description. One direct sentence should say what the product does for the customer. Keep extra copy only when it adds a concrete use case, status, privacy, or safety fact. Remove repeated claims, abstract slogans, throat-clearing, and filler. The description should carry the pitch.
+
 ## Brand promise
 
 **Privacy should be normal.**  
