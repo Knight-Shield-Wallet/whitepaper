@@ -377,3 +377,10 @@ details summary{color:var(--habitat-ink)}
   box-shadow:none;
   background:rgba(255,255,255,.055)
 }
+
+/* Final spacing for narrow Habitat layouts. */
+.contact-box>.status{margin-bottom:8px}
+.contact-box h2{font-size:clamp(1.65rem,4vw,2.25rem);line-height:1.05;letter-spacing:-.04em;margin:8px 0 12px}
+.pill-row+.actions{margin-top:14px}
+.callout[data-cafai-demo]>.actions{margin-top:12px;margin-bottom:16px}
+.callout[data-cafai-demo]>.demo-output{padding-top:16px}
